@@ -1,0 +1,23 @@
+[build]
+  publish = "public"
+
+# Satis sitesi ayri projede yayinlanir. Statik arayuz burada,
+# lisans/Discord/manifest/DLL API'si ise kalici admin projesinde kalir.
+# Ayni-origin proxy sayesinde CORS ve session cookie sorunu olusmaz.
+[[redirects]]
+  from = "/api/*"
+  to = "https://nihujohiuhjiuoj.netlify.app/api/:splat"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Robots-Tag = "index, follow"
+
+[[headers]]
+  for = "/downloads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
