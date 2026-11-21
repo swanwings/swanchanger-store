@@ -20,3 +20,6 @@ kaynağından gelir.
 - Publish dizini: `public`
 
 `main` dalına yapılan push'lar Netlify continuous deployment akışını tetikler.
+Ayrıca `.github/workflows/deploy.yml`, statik `public/` çıktısını her push'ta
+Netlify'e yayınlayarak bağlantıların güncel kalmasını sağlar. Workflow yalnızca
+`main` dalında çalışır ve Netlify token'ını GitHub Actions secret olarak kullanır.

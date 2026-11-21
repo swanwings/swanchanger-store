@@ -1,0 +1,55 @@
+name: Deploy public store
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-store-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Publish to Netlify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: 38b4a5c6-63cf-4d84-8775-6a61f2ea352e
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Publish static store
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npx --yes netlify-cli@27.16.0 deploy \
+            --site "$NETLIFY_SITE_ID" \
+            --dir=public \
+            --no-build \
+            --json > deploy-result.json
+
+          DEPLOY_ID="$(node -e "const fs=require('fs'); const result=JSON.parse(fs.readFileSync('deploy-result.json','utf8')); if(!result.deploy_id) process.exit(1); process.stdout.write(result.deploy_id)")"
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID/deploys/$DEPLOY_ID/restore" \
+            > restore-result.json
+
+          node -e "const fs=require('fs'); const result=JSON.parse(fs.readFileSync('restore-result.json','utf8')); if(result.state!=='ready') { console.error(result.error_message||'Deploy is not ready'); process.exit(1); } console.log('Published Netlify deploy: '+result.id)"
+
+          curl --fail --silent --show-error --head "https://swanchanger.netlify.app/" > /dev/null
