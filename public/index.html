@@ -3,326 +3,869 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SWANWINGS — CS2 Topluluğu & Lisans</title>
-<meta name="description" content="SwanWings CS2 topluluğu, lisans aktivasyonu ve indirme merkezi.">
-<link rel="icon" href="/favicon.ico">
+<title>SwanChanger — CS2 Skinchanger | Haftalık $5 · Aylık $15</title>
+<meta name="description" content="CS2 için premium skinchanger. Silah, bıçak, eldiven ve ajan görünümlerini saniyeler içinde değiştir. Haftalık $5, aylık $15. Tek dosya loader, otomatik güncelleme.">
+<meta name="theme-color" content="#07060c">
+<link rel="icon" type="image/png" href="/assets/shots/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SwanChanger — CS2 Skinchanger">
+<meta property="og:description" content="Silah, bıçak, eldiven ve ajan skinleri. Haftalık $5, aylık $15. Tek dosya loader.">
+<meta property="og:image" content="https://swanchanger.netlify.app/assets/shots/hero.jpg">
 <style>
   :root{
-    --bg:#07070a; --bg2:#0c0c11; --panel:#111118; --panel2:#16161f; --line:#24242f;
-    --txt:#f2f3f7; --dim:#8b8fa3; --acc:#ffffff; --ok:#35d07f; --bad:#ff5f6d; --warn:#ffb454;
-    --discord:#5865f2;
+    --bg:#07060c; --bg2:#0b0914; --panel:#100d1b; --panel2:#161126;
+    --line:#241c38; --line2:#332752;
+    --txt:#f3f0ff; --dim:#9b93b5; --acc:#a78bfa; --acc2:#7c3aed;
+    --ok:#35d07f; --bad:#ff5f6d; --warn:#ffb454; --discord:#5865f2;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--txt);font:15px/1.6 "Segoe UI",Inter,system-ui,sans-serif;min-height:100vh}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:86px}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 "Segoe UI",Inter,system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(7,7,10,.82);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;gap:22px;padding:14px 0}
-  .brand{font-weight:800;letter-spacing:3px;font-size:18px}
-  .brand span{color:var(--dim);font-weight:500;letter-spacing:1px;font-size:11px;margin-left:8px}
-  nav.links{display:flex;gap:20px;margin-left:auto;font-size:13px;color:var(--dim)}
+  button{font:inherit;color:inherit}
+  ::selection{background:#7c3aed;color:#fff}
+  .wrap{width:min(1160px,100% - 40px);margin-inline:auto}
+  .hidden{display:none !important}
+
+  .orbs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+  .orbs::before,.orbs::after{content:"";position:absolute;width:62vw;height:62vw;border-radius:50%;filter:blur(90px);opacity:.15}
+  .orbs::before{background:#7c3aed;top:-22vw;left:-12vw;animation:drift 26s ease-in-out infinite alternate}
+  .orbs::after{background:#1d4ed8;bottom:-26vw;right:-16vw;animation:drift 32s ease-in-out infinite alternate-reverse}
+  @keyframes drift{to{transform:translate3d(6vw,4vw,0) scale(1.12)}}
+
+  header{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(7,6,12,.8);border-bottom:1px solid var(--line)}
+  .nav{position:relative;display:flex;align-items:center;gap:24px;height:72px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.16em;font-size:14px;white-space:nowrap}
+  .brand img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(167,139,250,.45))}
+  .brand small{display:block;font-size:9.5px;letter-spacing:.32em;color:var(--dim);font-weight:600;margin-top:2px}
+  nav.links{display:flex;gap:26px;margin-left:auto;font-size:13.5px;color:var(--dim)}
+  nav.links a{position:relative;padding:6px 0;transition:color .2s}
+  nav.links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--acc);transition:right .25s}
   nav.links a:hover{color:var(--txt)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);padding:10px 18px;border-radius:10px;cursor:pointer;font:inherit;font-size:13px;transition:.18s}
-  .btn:hover{border-color:#4a4a5e;transform:translateY(-1px)}
-  .btn.primary{background:#fff;color:#0a0a0c;border-color:#fff;font-weight:700}
-  .btn.discord{background:var(--discord);border-color:var(--discord);color:#fff;font-weight:600}
+  nav.links a:hover::after{right:0}
+  .nav-cta{display:flex;align-items:center;gap:10px}
+  .burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;place-items:center}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--line);background:linear-gradient(180deg,#191426,#120e1e);color:var(--txt);padding:11px 19px;border-radius:11px;cursor:pointer;font-size:13.5px;font-weight:600;transition:transform .2s,border-color .2s,filter .2s,box-shadow .2s}
+  .btn:hover{transform:translateY(-2px);border-color:var(--line2)}
+  .btn.primary{background:linear-gradient(135deg,#f6f0ff,#ddd0ff 45%,#c3adff);color:#1a0b2e;border:0;font-weight:800;box-shadow:0 14px 34px -16px rgba(124,58,237,.95)}
+  .btn.primary:hover{filter:brightness(1.07);box-shadow:0 18px 40px -16px rgba(124,58,237,1)}
+  .btn.discord{background:var(--discord);border-color:var(--discord);color:#fff;font-weight:700}
   .btn.ghost{background:transparent}
-  .btn.small{padding:7px 12px;font-size:12px;border-radius:8px}
+  .btn.small{padding:8px 14px;font-size:12.5px;border-radius:9px}
+  .btn.block{width:100%}
   .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-  .hero{padding:72px 0 48px;text-align:center;background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(255,255,255,.07),transparent 70%)}
-  .hero h1{font-size:clamp(30px,6vw,58px);line-height:1.05;letter-spacing:2px;text-transform:uppercase}
-  .hero p{color:var(--dim);max-width:640px;margin:16px auto 26px}
-  .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .stats{display:flex;gap:26px;justify-content:center;margin-top:34px;flex-wrap:wrap;color:var(--dim);font-size:13px}
-  .stats b{color:var(--txt);font-size:19px;display:block}
-  section{padding:56px 0;border-top:1px solid var(--line)}
-  h2{font-size:clamp(20px,3vw,30px);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
-  .sub{color:var(--dim);margin-bottom:28px}
+
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center;padding:78px 0 60px}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #3a2c5c;background:rgba(124,58,237,.12);color:#d8ccff;font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:7px 13px;border-radius:999px}
+  .pill i{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80;animation:pulse 2.4s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  h1{font-size:clamp(36px,4.7vw,62px);line-height:1.03;letter-spacing:-.025em;margin:20px 0 18px;font-weight:800}
+  h1 em{font-style:normal;background:linear-gradient(115deg,#f3e8ff,#c4b5fd 38%,#8b5cf6 72%,#6d28d9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--dim);max-width:520px;font-size:15.5px;margin:0 0 28px}
+  .hero .row{display:flex;gap:12px;flex-wrap:wrap}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+  .chips span{font-size:12px;color:#b9aed6;border:1px solid var(--line);background:rgba(16,13,27,.7);padding:6px 11px;border-radius:999px}
+
+  .hero-art{position:relative;padding:10px 0 26px}
+  .frame{position:relative;border-radius:22px;overflow:hidden;border:1px solid #332752;box-shadow:0 50px 90px -40px rgba(0,0,0,.95),0 0 60px -30px rgba(124,58,237,.8);transform:rotate(-1.4deg)}
+  .frame img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:50% 42%}
+  .frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,6,12,0) 30%,rgba(7,6,12,.5) 58%,rgba(7,6,12,.96))}
+  .float{position:absolute;z-index:2;display:flex;align-items:center;gap:11px;background:rgba(14,11,24,.82);border:1px solid #3a2c5c;border-radius:14px;padding:10px 13px;backdrop-filter:blur(10px);box-shadow:0 20px 50px -20px #000}
+  .float .thumb{width:46px;height:46px;border-radius:10px;object-fit:cover;border:1px solid #4a3a78}
+  .float b{display:block;font-size:12.5px;letter-spacing:.02em}
+  .float span{display:block;font-size:10.5px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .float.top{top:-6px;right:-6px;animation:bob 6s ease-in-out infinite}
+  .float.bottom{bottom:2px;left:-10px;animation:bob 7s ease-in-out infinite .8s}
+  @keyframes bob{50%{transform:translateY(-7px)}}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border-top:1px solid var(--line);padding:26px 0 0}
+  .stats b{display:block;font-size:20px;letter-spacing:-.01em}
+  .stats span{font-size:12px;color:var(--dim)}
+
+  .ticker{border-block:1px solid var(--line);background:rgba(124,58,237,.06);overflow:hidden;padding:13px 0}
+  .ticker-track{display:flex;gap:38px;width:max-content;animation:marquee 30s linear infinite}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker span{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#b7a9d9;white-space:nowrap;display:flex;align-items:center;gap:38px}
+  .ticker span::after{content:"◆";font-size:7px;color:#6d5a9e}
+  @keyframes marquee{to{transform:translateX(-50%)}}
+
+  section{padding:76px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--acc);font-weight:800}
+  h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em;margin:12px 0 12px;font-weight:800}
+  .sub{color:var(--dim);max-width:660px;font-size:15px}
+  .sec-head{max-width:720px}
+
   .grid{display:grid;gap:16px}
-  .g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
-  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
-  .card h3{font-size:15px;margin-bottom:8px;letter-spacing:.5px}
-  .card p{color:var(--dim);font-size:13.5px}
-  .plan{position:relative}
-  .plan .price{font-size:30px;font-weight:800;margin:6px 0 2px}
-  .plan .price small{font-size:13px;color:var(--dim);font-weight:500}
-  .plan ul{list-style:none;margin:14px 0 18px;font-size:13.5px;color:var(--dim)}
-  .plan li{padding:5px 0;border-bottom:1px dashed #1e1e28}
-  .plan li:before{content:"✓";color:var(--ok);margin-right:8px}
-  .badge{position:absolute;top:-10px;right:16px;background:var(--ok);color:#04150b;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px}
-  .who{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-  .who img{width:46px;height:46px;border-radius:50%;background:var(--panel2)}
-  .who .nm{font-weight:700}
-  .who .id{color:var(--dim);font-size:12px;font-family:ui-monospace,Consolas,monospace}
-  .tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:4px 11px;font-size:12px;color:var(--dim)}
-  .tag.ok{color:var(--ok);border-color:#1c4b33;background:#071a11}
-  .tag.bad{color:var(--bad);border-color:#4b1c22;background:#1a070a}
-  label{display:block;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 6px}
-  input{width:100%;background:#0a0a10;border:1px solid var(--line);color:var(--txt);padding:11px 12px;border-radius:10px;font:inherit;font-size:14px;font-family:ui-monospace,Consolas,monospace}
-  input:focus{outline:none;border-color:#4a4a5e}
-  .note{font-size:12.5px;color:var(--dim);margin-top:12px;line-height:1.55}
-  .warn{border-left:3px solid var(--warn);background:#1a1408;color:#f5d9a8;padding:12px 14px;border-radius:8px;font-size:13px;margin-top:16px}
-  .res{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:#0b0b11;display:none}
+  .features{grid-template-columns:repeat(3,1fr);margin-top:36px}
+  .feat{position:relative;background:linear-gradient(180deg,rgba(22,17,38,.9),rgba(14,11,24,.9));border:1px solid var(--line);border-radius:16px;padding:22px;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
+  .feat::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 130px at 18% 0%,rgba(167,139,250,.15),transparent);opacity:0;transition:opacity .3s;pointer-events:none}
+  .feat:hover{transform:translateY(-4px);border-color:#3f3066;box-shadow:0 28px 60px -38px rgba(124,58,237,.9)}
+  .feat:hover::before{opacity:1}
+  .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(167,139,250,.22),rgba(124,58,237,.08));border:1px solid #352a55;color:#c4b5fd;margin-bottom:15px}
+  .feat h3{font-size:15.5px;margin:0 0 6px;letter-spacing:.01em}
+  .feat p{color:var(--dim);font-size:13.5px;margin:0;line-height:1.62}
+
+  .gal-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:transparent;border:1px solid var(--line);color:var(--dim);padding:8px 15px;border-radius:999px;font-size:12.5px;cursor:pointer;transition:.2s}
+  .chip:hover{color:var(--txt);border-color:#3d305e}
+  .chip.on{background:#1c1530;color:#ece6ff;border-color:#5b46a0;box-shadow:0 0 0 1px rgba(167,139,250,.18) inset}
+
+  .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+  .shot-wrap{height:250px;border-radius:16px}
+  .shot-wrap.wide{grid-column:span 2}
+  .shot-wrap.hide{display:none}
+  .shot{position:relative;width:100%;height:100%;padding:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0d0a17;cursor:pointer;text-align:left;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out,border-color .3s,box-shadow .3s;transform-style:preserve-3d}
+  .shot:hover{border-color:#4a3a78;box-shadow:0 30px 60px -34px rgba(124,58,237,.75)}
+  .shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.92) brightness(.9);transition:transform .65s cubic-bezier(.2,.7,.2,1),filter .4s}
+  .shot:hover img{transform:scale(1.06);filter:saturate(1.06) brightness(1)}
+  .shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,6,12,.05) 36%,rgba(7,6,12,.55) 72%,rgba(7,6,12,.96));pointer-events:none}
+  .shot .shine{position:absolute;inset:-40% -60%;z-index:2;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.17) 50%,transparent 58%);transform:translateX(-65%) rotate(8deg);transition:transform .85s ease;pointer-events:none}
+  .shot:hover .shine{transform:translateX(65%) rotate(8deg)}
+  .shot .tag{position:absolute;top:12px;left:12px;z-index:3;font-size:10px;letter-spacing:.15em;text-transform:uppercase;background:rgba(10,8,18,.72);border:1px solid rgba(167,139,250,.35);color:#d8ccff;padding:5px 9px;border-radius:999px;backdrop-filter:blur(6px)}
+  .shot .zoom{position:absolute;top:12px;right:12px;z-index:3;width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:rgba(10,8,18,.72);border:1px solid rgba(255,255,255,.14);opacity:0;transform:translateY(-4px);transition:.25s}
+  .shot:hover .zoom,.shot:focus-visible .zoom{opacity:1;transform:none}
+  .shot .meta{position:absolute;left:16px;right:16px;bottom:14px;z-index:3}
+  .shot .meta b{display:block;font-size:14.5px;letter-spacing:.01em}
+  .shot .meta span{font-size:12px;color:#b9aed6}
+  .shot:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  .gal-cta{position:relative;display:flex;flex-direction:column;justify-content:center;gap:9px;height:100%;border:1px solid #3f3066;border-radius:16px;padding:22px;overflow:hidden;background:radial-gradient(420px 200px at 82% -10%,rgba(124,58,237,.38),transparent 72%),linear-gradient(160deg,rgba(40,29,70,.92),rgba(12,9,20,.98))}
+  .gal-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(300px 140px at 10% 110%,rgba(167,139,250,.16),transparent 70%);pointer-events:none}
+  .gal-cta .k{position:relative;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#c4b5fd;font-weight:800}
+  .gal-cta h3{position:relative;margin:0;font-size:18px;line-height:1.3;letter-spacing:-.01em}
+  .gal-cta p{position:relative;margin:0;color:var(--dim);font-size:12.5px;line-height:1.6}
+  .gal-cta .btn{position:relative;margin-top:8px;align-self:flex-start}
+
+  .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:860px;margin:36px auto 0}
+  .plan{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(22,17,38,.92),rgba(13,10,22,.97));border:1px solid var(--line);border-radius:18px;padding:27px}
+  .plan.hot{border-color:#5b46a0;background:linear-gradient(180deg,rgba(38,27,66,.95),rgba(16,12,28,.98));box-shadow:0 34px 90px -46px rgba(124,58,237,.9)}
+  .flag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f6f0ff,#c9b6ff);color:#180b2b;font-size:10px;font-weight:900;letter-spacing:.14em;padding:5px 13px;border-radius:999px;white-space:nowrap}
+  .plan h3{margin:0;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#cfc4ea}
+  .price{display:flex;align-items:baseline;gap:6px;margin:12px 0 4px}
+  .price .cur{font-size:22px;font-weight:800;color:#c4b5fd}
+  .price .num{font-size:58px;font-weight:800;line-height:1;letter-spacing:-.04em}
+  .price .per{color:var(--dim);font-size:14px}
+  .plan .lead{color:var(--dim);font-size:13px;margin:0 0 4px}
+  .plan ul{list-style:none;margin:20px 0 24px;padding:0;display:grid;gap:10px;font-size:13.5px;color:#b9b0d0}
+  .plan li{display:flex;gap:9px;align-items:flex-start}
+  .plan li svg{flex:0 0 16px;margin-top:3px;color:var(--ok)}
+  .plan .btn{margin-top:auto;width:100%}
+  .paynote{text-align:center;color:var(--dim);font-size:12.5px;margin-top:22px}
+
+  .dl{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  .dl p{color:var(--dim);font-size:14.5px;max-width:480px}
+  .ticks{list-style:none;margin:22px 0 26px;padding:0;display:grid;gap:9px;font-size:13.5px;color:#c6bcdf}
+  .ticks li{display:flex;gap:9px;align-items:center}
+  .ticks svg{color:var(--ok);flex:0 0 16px}
+  .dl-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .dl-note{font-size:11.5px;color:var(--dim);margin-top:12px}
+  .dl-card{background:linear-gradient(180deg,rgba(22,17,38,.92),rgba(13,10,22,.97));border:1px solid var(--line);border-radius:18px;padding:8px 22px 18px;box-shadow:0 40px 80px -50px #000}
+  .kv{display:flex;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #221a35;font-size:12.5px}
+  .kv:last-of-type{border-bottom:0}
+  .kv span{color:var(--dim);white-space:nowrap}
+  .kv b{font-weight:600;font-family:ui-monospace,Consolas,monospace;font-size:12px;text-align:right;word-break:break-all}
+  .sha{margin-top:6px;padding-top:14px;border-top:1px solid var(--line)}
+  .sha .lbl{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--dim);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+  .sha code{display:block;font-family:ui-monospace,Consolas,monospace;font-size:10.5px;line-height:1.7;color:#b9aed6;background:#0a0812;border:1px solid #1d1730;border-radius:10px;padding:10px;word-break:break-all}
+  .copy{border:1px solid var(--line);background:transparent;color:#c4b5fd;font-size:11px;padding:4px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+  .copy:hover{border-color:#5b46a0;color:#fff}
+
+  .account{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:32px}
+  .card{background:linear-gradient(180deg,rgba(22,17,38,.9),rgba(13,10,22,.97));border:1px solid var(--line);border-radius:18px;padding:24px}
+  .lock{text-align:center;color:var(--dim);font-size:13.5px;padding:26px 18px;border:1px dashed var(--line2);border-radius:14px;background:rgba(10,8,18,.5)}
+  .who{display:flex;align-items:center;gap:14px;background:#0c0a16;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .who img{width:46px;height:46px;border-radius:50%;background:var(--panel2);object-fit:cover}
+  .who .nm{font-weight:700;font-size:14.5px}
+  .who .id{color:var(--dim);font-size:11.5px;font-family:ui-monospace,Consolas,monospace}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;justify-content:flex-end}
+  .tag2{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:10.5px;color:var(--dim);white-space:nowrap}
+  .tag2.ok{color:var(--ok);border-color:#1c4b33;background:#071a11}
+  .tag2.bad{color:var(--bad);border-color:#4b1c22;background:#1a070a}
+  label{display:block;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.14em;margin:16px 0 7px}
+  input{width:100%;background:#0a0812;border:1px solid var(--line);color:var(--txt);padding:11px 12px;border-radius:10px;font:inherit;font-size:13.5px;font-family:ui-monospace,Consolas,monospace;transition:border-color .2s}
+  input:focus{outline:none;border-color:#5b46a0}
+  .res{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:#0a0812;display:none;font-size:13px}
   .res.show{display:block}
-  .res b{font-size:15px}
   .muted{color:var(--dim)}
-  .mono{font-family:ui-monospace,Consolas,monospace}
-  .toast{position:fixed;right:18px;bottom:18px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:99;max-width:360px}
+  .warn{border-left:3px solid var(--warn);background:#1a1408;color:#f5d9a8;padding:12px 14px;border-radius:8px;font-size:12.5px;margin-top:16px;line-height:1.6}
+  .steps{color:var(--dim);font-size:13.5px;padding-left:20px;line-height:2;margin:12px 0 0}
+  .steps b{color:var(--txt)}
+  .steps a{color:#a78bfa;border-bottom:1px solid rgba(167,139,250,.35)}
+
+  footer{border-top:1px solid var(--line);padding:46px 0 28px;color:var(--dim);font-size:13px}
+  .foot{display:grid;grid-template-columns:1.5fr .6fr .6fr;gap:34px}
+  .foot .brand{margin-bottom:12px}
+  .foot p{max-width:340px;font-size:12.5px;line-height:1.7;margin:0}
+  .foot h4{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#c4b5fd;margin:0 0 12px}
+  .foot ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:12.5px}
+  .foot a:hover{color:var(--txt)}
+  .copybar{margin-top:32px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:11.5px}
+
+  .toast{position:fixed;right:18px;bottom:18px;z-index:150;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;max-width:360px}
   .toast.show{opacity:1;transform:none}
   .toast.err{border-left-color:var(--bad)}
   .toast.ok{border-left-color:var(--ok)}
-  .lock{text-align:center;color:var(--dim);font-size:13px;padding:22px;border:1px dashed var(--line);border-radius:14px}
-  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--dim);font-size:12.5px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-  footer .spacer{flex:1}
-  .hidden{display:none !important}
+
+  .lb{position:fixed;inset:0;z-index:140;display:grid;place-items:center;padding:26px;background:rgba(4,3,9,.88);backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+  .lb.open{opacity:1;visibility:visible}
+  .lb figure{margin:0;width:min(1100px,100%);transform:scale(.975);transition:transform .25s}
+  .lb.open figure{transform:none}
+  .lb img{width:100%;max-height:76vh;object-fit:contain;border-radius:14px;border:1px solid #33284f;background:#000}
+  .lb figcaption{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 2px 0;font-size:12.5px;color:var(--dim)}
+  .lb figcaption b{display:block;color:var(--txt);font-size:14px}
+  .lb .close,.lb .navbtn{position:absolute;width:44px;height:44px;border-radius:50%;border:1px solid #3a2c5c;background:rgba(16,13,27,.85);color:#e9e2ff;cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .lb .close:hover,.lb .navbtn:hover{background:#241a3d;border-color:#6d55b5}
+  .lb .close{top:18px;right:18px}
+  .lb .navbtn{top:50%;transform:translateY(-50%)}
+  .lb .prev{left:14px}
+  .lb .next{right:14px}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:980px){
+    .hero{grid-template-columns:1fr;gap:36px;padding:56px 0 48px}
+    .hero-art{max-width:620px}
+    .features{grid-template-columns:repeat(2,1fr)}
+    .shots{grid-template-columns:repeat(2,1fr)}
+    .shot-wrap.wide{grid-column:span 2}
+    .dl{grid-template-columns:1fr;gap:28px}
+    .account{grid-template-columns:1fr}
+    .foot{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:720px){
+    nav.links{display:none}
+    .burger{display:grid}
+    header.open nav.links{display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;gap:16px;margin:0;padding:18px 20px 22px;background:#0b0914;border-bottom:1px solid var(--line);box-shadow:0 30px 40px -20px #000}
+    .nav-cta .btn{display:none}
+    .stats{grid-template-columns:repeat(2,1fr);gap:18px}
+    .features{grid-template-columns:1fr}
+    .plans{grid-template-columns:1fr}
+    .shot-wrap,.shot-wrap.wide{grid-column:span 1;height:230px}
+    .shots{grid-template-columns:1fr}
+    .foot{grid-template-columns:1fr}
+    .lb .navbtn{display:none}
+  }
+  @media(max-width:480px){
+    .flag{white-space:normal;text-align:center;line-height:1.45;max-width:calc(100% - 24px);padding:6px 11px}
+    .price .num{font-size:50px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+    .reveal{opacity:1;transform:none}
+  }
 </style>
 </head>
 <body>
+<div class="orbs" aria-hidden="true"></div>
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="/">SWANWINGS<span>CS2</span></a>
-    <nav class="links">
-      <a href="#ozellikler">Özellikler</a>
-      <a href="#planlar">Planlar</a>
+    <a class="brand" href="#top" aria-label="SwanWings ana sayfa">
+      <img src="/assets/shots/logo.png" alt="SwanWings logosu">
+      <span>SWANWINGS<small>CS2 SKINCHANGER</small></span>
+    </a>
+    <nav class="links" aria-label="Ana menü">
+      <a href="#skinchanger">Ürün</a>
+      <a href="#galeri">Galeri</a>
+      <a href="#fiyatlar">Fiyatlar</a>
       <a href="#indir">İndir</a>
-      <a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">Steam Grubu</a>
-      <a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord</a>
+      <a href="#hesap">Hesap</a>
     </nav>
-    <button class="btn small" id="loginBtn">Discord ile Giriş</button>
+    <div class="nav-cta">
+      <a class="btn small discord" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord</a>
+      <button class="burger" id="navToggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="mainMenu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<div class="wrap hero">
-  <h1>SwanWings <span style="opacity:.55">CS2</span></h1>
-  <p>Topluluğa katıl, lisansını etkinleştir, kendi build'ini indir. Steam grubu ve Discord üyeliği lisansın bir parçası — ayrılırsan lisans otomatik iptal edilir, geri katılınca tekrar aktif olur.</p>
-  <div class="row">
-    <a class="btn discord" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord Sunucusuna Katıl</a>
-    <a class="btn" href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">Steam Grubuna Katıl</a>
-    <a class="btn primary" href="#indir">İndir</a>
-  </div>
-  <div class="stats">
-    <div><b id="sUsers">—</b>aktif kullanıcı</div>
-    <div><b id="sVersion">—</b>build</div>
-    <div><b>24/7</b>topluluk</div>
-  </div>
-</div>
-
-<section id="ozellikler">
+<main id="top">
   <div class="wrap">
-    <h2>Özellikler</h2>
-    <div class="sub">SwanWings v36 — hile değil, düzgün yapılmış bir araç seti.</div>
-    <div class="grid g3">
-      <div class="card"><h3>Hızlı Başlangıç</h3><p>Loader açılır, Steam launch options otomatik ayarlanır, oyun hazır.</p></div>
-      <div class="card"><h3>Güvenli Lisans</h3><p>Anahtar sunucu tarafında doğrulanır, cihaz (HWID) kilidi vardır.</p></div>
-      <div class="card"><h3>Topluluk Şartı</h3><p>Steam grubu + tag ve Discord üyeliği otomatik kontrol edilir.</p></div>
-      <div class="card"><h3>Otomatik Güncelleme</h3><p>Yeni build'ler otomatik çekilir, SHA-256 ile doğrulanır.</p></div>
-      <div class="card"><h3>HWID Koruması</h3><p>Anahtar paylaşımı ve iptal denemeleri otomatik engellenir.</p></div>
-      <div class="card"><h3>7/24 Topluluk</h3><p>Discord lobileri, Premier toplantıları ve destek.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="planlar">
-  <div class="wrap">
-    <h2>Planlar</h2>
-    <div class="sub">Satın alma ve teslim Discord üzerinden yapılır. Her kullanıcıya kendi anahtarı ve kendi build'i verilir.</div>
-    <div class="grid g3">
-      <div class="card plan">
-        <h3>1 Aylık</h3>
-        <div class="price">₺? <small>/ ay</small></div>
-        <ul><li>Tüm özellikler</li><li>Topluluk üyeliği</li><li>Otomatik güncelleme</li></ul>
-        <a class="btn" style="width:100%" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord'dan Satın Al</a>
-      </div>
-      <div class="card plan">
-        <span class="badge">POPÜLER</span>
-        <h3>Sınırsız</h3>
-        <div class="price">₺? <small>/ ömür</small></div>
-        <ul><li>Süre sınırı yok</li><li>Öncelikli destek</li><li>Tüm build'ler</li></ul>
-        <a class="btn primary" style="width:100%" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord'dan Satın Al</a>
-      </div>
-      <div class="card plan">
-        <h3>Ömürlük</h3>
-        <div class="price">₺? <small>tek ödeme</small></div>
-        <ul><li>En yüksek build erişimi</li><li>Özel kanal</li><li>Topluluk ekibi</li></ul>
-        <a class="btn" style="width:100%" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord'dan Satın Al</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="hesap">
-  <div class="wrap">
-    <h2>Giriş & Lisans Sorgulama</h2>
-    <div class="sub">Discord hesabınla giriş yap, lisansını ve topluluk durumunu gör.</div>
-
-    <div class="grid g2">
-      <div class="card">
-        <div id="loggedOut" class="lock">
-          Giriş yapmadan lisans sorgulayamazsın.<br><br>
-          <button class="btn discord" id="loginBtn2">Discord ile Giriş Yap</button>
-          <div class="note">Giriş sadece Discord OAuth ile yapılır; şifre veya bot gerekmez.</div>
+    <section class="hero" style="border-top:0">
+      <div>
+        <span class="pill"><i></i>Yalnızca skinchanger · CS2</span>
+        <h1>Envanterin,<br><em>senin kuralların.</em></h1>
+        <p>SwanChanger; CS2 için silah, bıçak, eldiven ve ajan görünümlerini saniyeler içinde değiştiren bir skinchanger. Menüden seç, oyun içinde gör — dosya değiştirmeden, FPS kaybı olmadan.</p>
+        <div class="row">
+          <a class="btn primary" href="#indir">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            Loader'ı İndir
+          </a>
+          <a class="btn" href="#galeri">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 18 5.5-5 4 3.5 2.5-2 4 3.5"/></svg>
+            Galeriyi Gör
+          </a>
         </div>
-
-        <div id="loggedIn" class="hidden">
-          <div class="who">
-            <img id="uAvatar" alt="">
-            <div>
-              <div class="nm" id="uName">—</div>
-              <div class="id" id="uId">—</div>
-            </div>
-            <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-              <span class="tag" id="tagDiscord">Discord</span>
-              <span class="tag" id="tagMember">Sunucu üyeliği</span>
-            </div>
-          </div>
-
-          <label for="lk">Lisans Anahtarı</label>
-          <input id="lk" placeholder="XXXX-XXXX-XXXX-XXXX-..." autocomplete="off">
-          <label for="hw">HWID (cihaz kimliği)</label>
-          <input id="hw" placeholder="32 haneli HWID" autocomplete="off">
-          <div class="row" style="justify-content:flex-start;margin-top:16px">
-            <button class="btn primary" id="queryBtn">Lisansı Sorgula</button>
-            <button class="btn ghost" id="copyMeBtn">HWID'mi Kopyala</button>
-          </div>
-
-          <div class="res" id="res"></div>
-
-          <div class="warn">
-            <b>Uyarı:</b> Steam grubundan, Steam tag'ından veya Discord sunucusundan ayrılırsan
-            lisansın otomatik iptal edilir. Yeniden katılıp doğruladığında lisans tekrar aktif olur.
-          </div>
+        <div class="chips">
+          <span>Haftalık $5</span>
+          <span>Aylık $15</span>
+          <span>Anında aktivasyon</span>
+          <span>HWID korumalı</span>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Topluluk Adımları</h3>
-        <p>Her lisans için üç adım zorunlu:</p>
-        <ol style="color:var(--dim);font-size:13.5px;padding-left:20px;line-height:1.9">
-          <li><b style="color:var(--txt)">Steam grubuna katıl</b> — <a class="mono" style="color:#6ee7ff" href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">steamcommunity.com/groups/swanwings</a></li>
-          <li><b style="color:var(--txt)">Steam tag'ını al</b> — profilinden "SwanWings" etiketini seç (profil herkese açık olmalı)</li>
-          <li><b style="color:var(--txt)">Discord sunucusuna katıl</b> — <a class="mono" style="color:#6ee7ff" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">discord.gg/zT8mfwCT56</a></li>
-        </ol>
-        <div class="note">Doğrulama oyun içindeki lisans ekranında otomatik yapılır; kartlar yeşil tik olunca lisans anahtarı alanı açılır.</div>
+      <div class="hero-art">
+        <div class="frame">
+          <img src="/assets/shots/hero.jpg" alt="CS2 oyun içi bıçak ve eldiven görünümü" fetchpriority="high">
+        </div>
+        <div class="float top">
+          <div>
+            <span>Build</span>
+            <b id="verPill">v36</b>
+          </div>
+        </div>
+        <div class="float bottom">
+          <img class="thumb" src="/assets/shots/knife-doppler.jpg" alt="">
+          <div>
+            <b>Bayonet | Doppler</b>
+            <span>Bıçak &amp; Eldiven</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section id="indir">
-  <div class="wrap">
-    <h2>İndir</h2>
-    <div class="sub">Giriş yaptıktan sonra build'ler açılır. Loader güncellemeleri otomatik çeker.</div>
-    <div class="grid g3">
-      <div class="card">
-        <h3>SwanChanger Loader</h3>
-        <p>Windows loader — Steam'i hazırlar, DLL'i yükler, otomatik günceller.</p>
-        <a class="btn" id="dlLoader" href="/downloads/SwanChanger.exe" download>Loader İndir</a>
+    <div class="stats">
+      <div><b>1000+</b><span>silah ve bıçak skini</span></div>
+      <div><b>Tek tık</b><span>oyun içinde değişim</span></div>
+      <div><b>16 MB</b><span>tek dosya loader</span></div>
+      <div><b>7/24</b><span>Discord desteği</span></div>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Silah skinleri</span><span>Bıçaklar</span><span>Eldivenler</span><span>Ajanlar</span><span>StatTrak</span><span>Sticker</span><span>Müzik kitleri</span>
+      <span>Silah skinleri</span><span>Bıçaklar</span><span>Eldivenler</span><span>Ajanlar</span><span>StatTrak</span><span>Sticker</span><span>Müzik kitleri</span>
+    </div>
+  </div>
+
+  <section id="skinchanger">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Ürün</span>
+        <h2>Sadece skinchanger. Fazlası yok.</h2>
+        <p class="sub">Bu mağazada tek ürün var: SwanChanger skinchanger. Aimbot, ESP veya başka bir paket satılmıyor — yalnızca görünümünü değiştiren, hafif ve temiz bir araç.</p>
       </div>
-      <div class="card">
-        <h3>Manifest</h3>
-        <p>Loader'ın kontrol ettiği build bilgisi (sürüm, sha256, boyut).</p>
-        <a class="btn" id="dlManifest" href="/api/swan/manifest" target="_blank" rel="noopener">Manifest Aç</a>
-      </div>
-      <div class="card">
-        <h3>DLL (v36)</h3>
-        <p>En güncel build. Loader bunu otomatik indirir, elle de alabilirsin.</p>
-        <a class="btn" id="dlDll" href="/api/swan/dll" target="_blank" rel="noopener">DLL İndir</a>
+      <div class="grid features">
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13l4-3v6l-4 3H3z"/><path d="M7 14v5M3 19h8"/></svg></div>
+          <h3>Silah skinleri</h3>
+          <p>Tüm koleksiyonlar; float, desen ve aşınma seçenekleriyle silahlarına uygula.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 18 6l2 2L6 22z"/><path d="m14 6 4 4M3 17l4 4"/></svg></div>
+          <h3>Bıçak &amp; eldiven</h3>
+          <p>Karambit'ten Bayonet'e tüm bıçaklar; eldivenlerle uyumlu kombinler.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 21c.6-4 3.4-6 7-6s6.4 2 7 6"/></svg></div>
+          <h3>Ajanlar</h3>
+          <p>T ve CT ajan modelleri; ses ve eldiven uyumuyla birlikte görünür.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+          <h3>StatTrak &amp; sticker</h3>
+          <p>Sayaç, sticker ve isim etiketi desteğiyle envanterini tamamla.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+          <h3>Anında değişim</h3>
+          <p>Menüden seçtiğin görünüm, oyunu yeniden başlatmadan uygulanır.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17V7m5 10V4m5 13v-7m5 7V9"/></svg></div>
+          <h3>FPS dostu</h3>
+          <p>Hafif render yolu; skinchanger açıkken ekstra yük oluşturmaz.</p>
+        </div>
       </div>
     </div>
-    <div class="note" id="dlNote">İndirme bölümü Discord girişinden sonra açılır.</div>
-  </div>
-</section>
+  </section>
+
+  <section id="galeri">
+    <div class="wrap">
+      <div class="gal-head">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Galeri</span>
+          <h2>Menüden oyun içine</h2>
+          <p class="sub">Gerçek oyun içi görüntüler. Kartlara tıkla ve büyüt; filtrelerle menü, oyun içi ve bıçak/eldiven karelerini ayır.</p>
+        </div>
+        <div class="filters" role="group" aria-label="Galeri filtresi">
+          <button class="chip on" type="button" data-filter="all" aria-pressed="true">Tümü</button>
+          <button class="chip" type="button" data-filter="menu" aria-pressed="false">Menü</button>
+          <button class="chip" type="button" data-filter="game" aria-pressed="false">Oyun içi</button>
+          <button class="chip" type="button" data-filter="knife" aria-pressed="false">Bıçak &amp; Eldiven</button>
+        </div>
+      </div>
+
+      <div class="shots">
+        <div class="shot-wrap wide reveal" data-cat="menu">
+          <button class="shot" type="button" data-cat="menu" data-full="/assets/shots/menu.jpg" data-title="Lisans ekranı" data-desc="Loader sonrası oyun içi lisans paneli — anahtar ve HWID doğrulaması.">
+            <img src="/assets/shots/menu.jpg" alt="CS2 ana menüde lisans aktivasyon paneli" loading="lazy">
+            <span class="shine"></span>
+            <span class="tag">Menü</span>
+            <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
+            <span class="meta"><b>Lisans ekranı</b><span>Oyun içi aktivasyon · menü</span></span>
+          </button>
+        </div>
+
+        <div class="shot-wrap reveal" data-cat="knife">
+          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-nomad.jpg" data-title="Göçebe Bıçağı · Gizli Şehir" data-desc="Bıçak ve eldiven kombinasyonu aynı anda uygulanır.">
+            <img src="/assets/shots/knife-nomad.jpg" alt="Göçebe bıçağı ve eldiven görünümü" loading="lazy">
+            <span class="shine"></span>
+            <span class="tag">Bıçak &amp; Eldiven</span>
+            <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
+            <span class="meta"><b>Göçebe Bıçağı</b><span>Gizli Şehir · eldiven uyumu</span></span>
+          </button>
+        </div>
+
+        <div class="shot-wrap reveal" data-cat="knife">
+          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-doppler.jpg" data-title="Bayonet · Doppler" data-desc="Bıçak deseni ve eldiven uyumu oyun içinde anında değişir.">
+            <img src="/assets/shots/knife-doppler.jpg" alt="Bayonet Doppler bıçağı ve eldiven" loading="lazy">
+            <span class="shine"></span>
+            <span class="tag">Bıçak &amp; Eldiven</span>
+            <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
+            <span class="meta"><b>Bayonet · Doppler</b><span>Bıçak · desen seçimi</span></span>
+          </button>
+        </div>
+
+        <div class="shot-wrap reveal" data-cat="game">
+          <button class="shot" type="button" data-cat="game" data-full="/assets/shots/awp-printstream.jpg" data-title="AWP · Printstream" data-desc="Silah skinleri float ve desen seçenekleriyle uygulanır.">
+            <img src="/assets/shots/awp-printstream.jpg" alt="AWP Printstream skinli oyun içi görüntü" loading="lazy">
+            <span class="shine"></span>
+            <span class="tag">Oyun içi</span>
+            <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
+            <span class="meta"><b>AWP · Printstream</b><span>Silah skini · oyun içi</span></span>
+          </button>
+        </div>
+
+        <div class="shot-wrap reveal">
+          <div class="gal-cta">
+            <span class="k">Hazır mısın</span>
+            <h3>Tüm skinler, tek loader.</h3>
+            <p>Lisansını al, loader'ı indir; gerisini SwanChanger halleder.</p>
+            <a class="btn primary small" href="#indir">Loader'ı İndir</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fiyatlar">
+    <div class="wrap">
+      <div class="sec-head reveal" style="text-align:center;margin-inline:auto">
+        <span class="eyebrow">Fiyatlar</span>
+        <h2>Basit fiyat, gizli ücret yok.</h2>
+        <p class="sub" style="margin-inline:auto">Ödeme ve teslimat Discord üzerinden yapılır. Fiyatlar USD'dir; anahtarın süresi ilk aktivasyonda başlar.</p>
+      </div>
+
+      <div class="plans">
+        <div class="plan reveal">
+          <h3>Haftalık</h3>
+          <div class="price"><span class="cur">$</span><span class="num">5</span><span class="per">/ hafta</span></div>
+          <p class="lead">Kısa süreli denemek için.</p>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Tüm silah, bıçak, eldiven ve ajan skinleri</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Sınırsız kombin ve anında değişim</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>HWID korumalı lisans</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Discord desteği</li>
+          </ul>
+          <a class="btn" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Haftalık Al · $5</a>
+        </div>
+
+        <div class="plan hot reveal">
+          <span class="flag">EN AVANTAJLI · 4 HAFTADA $20 YERİNE $15</span>
+          <h3>Aylık</h3>
+          <div class="price"><span class="cur">$</span><span class="num">15</span><span class="per">/ ay</span></div>
+          <p class="lead">Kesintisiz oynamak için.</p>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Haftalık planın tamamı</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>30 gün kesintisiz erişim</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Öncelikli destek</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Yeni skin ve güncellemeler dahil</li>
+          </ul>
+          <a class="btn primary" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Aylık Al · $15</a>
+        </div>
+      </div>
+      <p class="paynote">Lisans, Discord üzerinden gönderilir. Topluluk şartı (Steam grubu + Discord üyeliği) aktif kalmalıdır.</p>
+    </div>
+  </section>
+
+  <section id="indir">
+    <div class="wrap dl">
+      <div class="reveal">
+        <span class="eyebrow">İndirme</span>
+        <h2>Tek dosya. Gerisi otomatik.</h2>
+        <p>Loader'ı indir, çalıştır ve lisansını gir. Skinchanger modülü loader tarafından otomatik indirilir ve doğrulanır — ayrı DLL veya manifest indirmene gerek yok.</p>
+        <ul class="ticks">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Kurulum gerektirmez</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>Otomatik güncelleme</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>SHA-256 doğrulaması</li>
+        </ul>
+        <div class="dl-actions">
+          <a class="btn primary" id="dlLoader" href="/downloads/SwanChanger.exe" download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+            SwanChanger.exe İndir
+          </a>
+          <span class="muted" style="font-size:12px">Windows 10/11 · 64-bit</span>
+        </div>
+        <p class="dl-note">SmartScreen ilk çalıştırmada uyarı gösterebilir: “Ek bilgi” → “Yine de çalıştır”.</p>
+      </div>
+
+      <div class="dl-card reveal">
+        <div class="kv"><span>Sürüm</span><b id="ver">v36</b></div>
+        <div class="kv"><span>Boyut</span><b>15,8 MB · 16.562.688 bayt</b></div>
+        <div class="kv"><span>Platform</span><b>Windows 10 / 11 · x64</b></div>
+        <div class="kv"><span>Dosya</span><b>SwanChanger.exe</b></div>
+        <div class="sha">
+          <div class="lbl"><span>Loader SHA-256</span><button class="copy" id="copySha" type="button">Kopyala</button></div>
+          <code>d50f251a4dfcb848aa15389539f70b3fdb4ac5355ddd04ff8034ce742ef51859</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hesap">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Hesap</span>
+        <h2>Lisansını kontrol et</h2>
+        <p class="sub">Discord ile giriş yap; lisans durumunu ve topluluk şartlarını tek ekranda gör.</p>
+      </div>
+
+      <div class="account">
+        <div class="card reveal">
+          <div id="loggedOut" class="lock">
+            Giriş yapmadan lisans sorgulayamazsın.<br><br>
+            <button class="btn discord" id="loginBtn" type="button">Discord ile Giriş Yap</button>
+            <div class="muted" style="font-size:12px;margin-top:12px">Giriş yalnızca Discord OAuth ile yapılır; şifre veya bot gerekmez.</div>
+          </div>
+
+          <div id="loggedIn" class="hidden">
+            <div class="who">
+              <img id="uAvatar" alt="">
+              <div>
+                <div class="nm" id="uName">—</div>
+                <div class="id" id="uId">—</div>
+              </div>
+              <div class="tags">
+                <span class="tag2" id="tagDiscord">Discord</span>
+                <span class="tag2" id="tagMember">Sunucu üyeliği</span>
+              </div>
+            </div>
+
+            <label for="lk">Lisans Anahtarı</label>
+            <input id="lk" placeholder="XXXX-XXXX-XXXX-XXXX-..." autocomplete="off">
+            <label for="hw">HWID (cihaz kimliği)</label>
+            <input id="hw" placeholder="32 haneli HWID" autocomplete="off">
+            <div class="row" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+              <button class="btn primary" id="queryBtn" type="button">Lisansı Sorgula</button>
+              <button class="btn ghost" id="copyMeBtn" type="button">HWID'mi Kopyala</button>
+              <button class="btn ghost" id="logoutBtn" type="button" style="margin-left:auto">Çıkış</button>
+            </div>
+
+            <div class="res" id="res"></div>
+
+            <div class="warn">
+              <b>Uyarı:</b> Steam grubundan, Steam tag'ından veya Discord sunucusundan ayrılırsan lisansın otomatik iptal edilir. Yeniden katılıp doğruladığında lisans tekrar aktif olur.
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <h3 style="margin:0 0 8px;font-size:15px">Topluluk adımları</h3>
+          <p class="muted" style="font-size:13.5px;margin:0">Her lisans için üç adım zorunlu:</p>
+          <ol class="steps">
+            <li><b>Steam grubuna katıl</b> — <a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">steamcommunity.com/groups/swanwings</a></li>
+            <li><b>Steam tag'ını al</b> — profilinden “SwanWings” etiketini seç (profil herkese açık olmalı)</li>
+            <li><b>Discord sunucusuna katıl</b> — <a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">discord.gg/zT8mfwCT56</a></li>
+          </ol>
+          <div class="warn" style="border-left-color:#7c3aed;background:#120d20;color:#cbbcf0">
+            Doğrulama oyun içindeki lisans ekranında otomatik yapılır; kartlar yeşil tik olunca lisans anahtarı alanı açılır.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div class="wrap" style="display:flex;gap:16px;align-items:center;width:100%">
-    <span>© <span id="yr"></span> SwanWings</span>
-    <a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord</a>
-    <a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">Steam Grubu</a>
-    <span class="spacer"></span>
-    <span>Bu site bir topluluk ürünüdür; Steam ve Discord bağımsız markalardır.</span>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#top">
+          <img src="/assets/shots/logo.png" alt="">
+          <span>SWANWINGS<small>CS2 SKINCHANGER</small></span>
+        </a>
+        <p>CS2 için hafif bir skinchanger. Silah, bıçak, eldiven ve ajan görünümlerini değiştir; oyunun kendisine dokunma.</p>
+      </div>
+      <div>
+        <h4>Mağaza</h4>
+        <ul>
+          <li><a href="#skinchanger">Ürün</a></li>
+          <li><a href="#galeri">Galeri</a></li>
+          <li><a href="#fiyatlar">Fiyatlar</a></li>
+          <li><a href="#indir">İndir</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Topluluk</h4>
+        <ul>
+          <li><a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord</a></li>
+          <li><a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">Steam Grubu</a></li>
+          <li><a href="#hesap">Lisans Sorgula</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copybar">
+      <span>© <span id="yr"></span> SwanWings. Tüm hakları saklıdır.</span>
+      <span>Valve, Steam ve Counter-Strike 2; Valve Corporation'ın tescilli markalarıdır. Bu site Valve ile bağlantılı değildir.</span>
+    </div>
   </div>
 </footer>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Görsel önizleme" aria-hidden="true">
+  <button class="close" id="lbClose" type="button" aria-label="Kapat">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
+  </button>
+  <button class="navbtn prev" id="lbPrev" type="button" aria-label="Önceki görsel">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>
+  </button>
+  <button class="navbtn next" id="lbNext" type="button" aria-label="Sonraki görsel">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
+  <figure>
+    <img id="lbImg" src="" alt="">
+    <figcaption>
+      <div><b id="lbTitle">—</b><span id="lbDesc"></span></div>
+      <span id="lbCount">—</span>
+    </figcaption>
+  </figure>
+</div>
 
 <script>
-const $ = (s) => document.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
 const toastEl = $("#toast");
 let toastT = null;
 function toast(msg, kind) {
   toastEl.textContent = msg;
   toastEl.className = "toast show" + (kind ? " " + kind : "");
   clearTimeout(toastT);
-  toastT = setTimeout(() => (toastEl.className = "toast"), 3200);
+  toastT = setTimeout(() => (toastEl.className = "toast"), 3400);
 }
 $("#yr").textContent = new Date().getFullYear();
 
+/* Mobil menü */
+const header = $("header");
+const navToggle = $("#navToggle");
+navToggle.addEventListener("click", () => {
+  const open = header.classList.toggle("open");
+  navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  navToggle.setAttribute("aria-label", open ? "Menüyü kapat" : "Menüyü aç");
+});
+$$("nav.links a").forEach((a) =>
+  a.addEventListener("click", () => {
+    header.classList.remove("open");
+    navToggle.setAttribute("aria-expanded", "false");
+  })
+);
+
+/* Kaydırma animasyonları */
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if ("IntersectionObserver" in window && !reduceMotion) {
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+  );
+  $$(".reveal").forEach((el) => io.observe(el));
+} else {
+  $$(".reveal").forEach((el) => el.classList.add("in"));
+}
+
+/* Galeri filtresi */
+const chips = $$(".chip");
+chips.forEach((chip) => {
+  chip.addEventListener("click", () => {
+    chips.forEach((c) => {
+      const on = c === chip;
+      c.classList.toggle("on", on);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    const f = chip.dataset.filter;
+    $$(".shot-wrap").forEach((w) => {
+      w.classList.toggle("hide", !(f === "all" || w.dataset.cat === f));
+    });
+  });
+});
+
+/* Kart eğimi */
+const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+if (finePointer && !reduceMotion) {
+  $$(".shot").forEach((card) => {
+    card.addEventListener("pointermove", (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty("--ry", (px * 7).toFixed(2) + "deg");
+      card.style.setProperty("--rx", (-py * 7).toFixed(2) + "deg");
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.setProperty("--ry", "0deg");
+      card.style.setProperty("--rx", "0deg");
+    });
+  });
+}
+
+/* Lightbox */
+const lb = $("#lightbox");
+const lbImg = $("#lbImg");
+const lbTitle = $("#lbTitle");
+const lbDesc = $("#lbDesc");
+const lbCount = $("#lbCount");
+const shotEls = $$(".shot");
+let lbList = [];
+let lbPos = 0;
+
+function showShot(pos) {
+  if (!lbList.length) return;
+  lbPos = (pos + lbList.length) % lbList.length;
+  const s = lbList[lbPos];
+  lbImg.src = s.dataset.full;
+  lbImg.alt = s.dataset.title || "";
+  lbTitle.textContent = s.dataset.title || "";
+  lbDesc.textContent = s.dataset.desc || "";
+  lbCount.textContent = lbPos + 1 + " / " + lbList.length;
+}
+function openLb(shot) {
+  lbList = shotEls.filter((s) => !s.closest(".shot-wrap").classList.contains("hide"));
+  showShot(lbList.indexOf(shot));
+  lb.classList.add("open");
+  lb.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  $("#lbClose").focus();
+}
+function closeLb() {
+  lb.classList.remove("open");
+  lb.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+shotEls.forEach((s) => s.addEventListener("click", () => openLb(s)));
+$("#lbClose").addEventListener("click", closeLb);
+$("#lbPrev").addEventListener("click", () => showShot(lbPos - 1));
+$("#lbNext").addEventListener("click", () => showShot(lbPos + 1));
+lb.addEventListener("click", (e) => {
+  if (e.target === lb) closeLb();
+});
+document.addEventListener("keydown", (e) => {
+  if (!lb.classList.contains("open")) return;
+  if (e.key === "Escape") closeLb();
+  if (e.key === "ArrowLeft") showShot(lbPos - 1);
+  if (e.key === "ArrowRight") showShot(lbPos + 1);
+});
+
+/* SHA kopyala */
+const SHA = "d50f251a4dfcb848aa15389539f70b3fdb4ac5355ddd04ff8034ce742ef51859";
+$("#copySha").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(SHA);
+    toast("SHA-256 kopyalandı", "ok");
+  } catch {
+    toast("Kopyalanamadı — tarayıcı izni yok", "err");
+  }
+});
+
+/* Discord girişi */
 function startLogin() {
   fetch("/api/site/login", { redirect: "manual" })
     .then((r) => {
-      if (r.status === 503) return r.json().then((j) => { throw new Error(j.hint || "Discord girişi yapılandırılmamış"); });
+      if (r.status === 503) {
+        return r.json().then((j) => {
+          throw new Error(j.hint || "Discord girişi yapılandırılmamış");
+        });
+      }
+      if (r.type === "opaqueredirect" || r.status === 0) {
+        window.location.href = "/api/site/login";
+        return;
+      }
       const loc = r.headers.get("location");
-      if (loc) { window.location.href = loc; return; }
+      if (loc) {
+        window.location.href = loc;
+        return;
+      }
       throw new Error("Giriş başlatılamadı");
     })
     .catch((e) => toast(e.message, "err"));
 }
-$("#loginBtn").addEventListener("click", startLogin);
-$("#loginBtn2").addEventListener("click", startLogin);
 
-const state = { user: null };
+const loggedOut = $("#loggedOut");
+const loggedIn = $("#loggedIn");
+
+function showLoggedOut() {
+  loggedOut.classList.remove("hidden");
+  loggedIn.classList.add("hidden");
+}
 
 async function loadMe() {
   try {
     const r = await fetch("/api/site/me");
     const j = await r.json();
-    if (!j.ok) { showLoggedOut(); return; }
-    state.user = j.user;
-    $("#loggedOut").classList.add("hidden");
-    $("#loggedIn").classList.remove("hidden");
+    if (!j.ok) {
+      showLoggedOut();
+      return;
+    }
+    loggedOut.classList.add("hidden");
+    loggedIn.classList.remove("hidden");
     $("#uAvatar").src = j.user.avatar || "";
     $("#uName").textContent = j.user.global_name || j.user.username;
     $("#uId").textContent = j.user.username + " · " + j.user.id;
+    $("#tagDiscord").textContent = "Discord bağlı ✓";
+    $("#tagDiscord").className = "tag2 ok";
     $("#tagMember").textContent = j.member ? "Sunucu üyesin ✓" : "Sunucuya katıl";
-    $("#tagMember").className = "tag " + (j.member ? "ok" : "bad");
-    $("#loginBtn").textContent = "Çıkış";
-    $("#loginBtn").onclick = async () => {
-      await fetch("/api/site/logout", { method: "POST" });
-      location.reload();
-    };
-    unlockDownloads(true);
+    $("#tagMember").className = "tag2 " + (j.member ? "ok" : "bad");
   } catch {
     showLoggedOut();
   }
 }
-function showLoggedOut() {
-  $("#loggedOut").classList.remove("hidden");
-  $("#loggedIn").classList.add("hidden");
-  $("#loginBtn").textContent = "Discord ile Giriş";
-  $("#loginBtn").onclick = startLogin;
-  unlockDownloads(false);
-}
-function unlockDownloads(on) {
-  const note = $("#dlNote");
-  if (on) {
-    note.textContent = "Giriş yapıldı — build'ler artık senin hesabına bağlı. Anahtarını oyun içinde gir, HWID'ine kilitlenir.";
-  } else {
-    note.textContent = "İndirme bölümü Discord girişinden sonra açılır.";
-  }
-}
+
+$("#loginBtn").addEventListener("click", startLogin);
+$("#logoutBtn").addEventListener("click", async () => {
+  await fetch("/api/site/logout", { method: "POST" });
+  location.reload();
+});
 
 $("#copyMeBtn").addEventListener("click", () => {
   const v = $("#hw").value.trim();
-  if (!v) { toast("Önce HWID gir", "err"); return; }
-  navigator.clipboard.writeText(v).then(() => toast("HWID kopyalandı", "ok"));
+  if (!v) {
+    toast("Önce HWID gir", "err");
+    return;
+  }
+  navigator.clipboard
+    .writeText(v)
+    .then(() => toast("HWID kopyalandı", "ok"))
+    .catch(() => toast("Kopyalanamadı", "err"));
 });
 
 $("#queryBtn").addEventListener("click", async () => {
   const key = $("#lk").value.trim();
   const hwid = $("#hw").value.trim().toUpperCase();
-  if (!key) { toast("Lisans anahtarı gir", "err"); return; }
+  if (!key) {
+    toast("Lisans anahtarı gir", "err");
+    return;
+  }
   const res = $("#res");
   res.classList.add("show");
   res.innerHTML = '<span class="muted">Sorgulanıyor…</span>';
@@ -345,41 +888,48 @@ $("#queryBtn").addEventListener("click", async () => {
     const st = j.status;
     const ok = st === "active";
     const c = j.community || {};
-    const chips = [
-      '<span class="tag ' + (c.group ? "ok" : "bad") + '">Steam grubu: ' + (c.group ? "var ✓" : "yok") + "</span>",
-      '<span class="tag ' + (c.tag ? "ok" : "bad") + '">Steam tag: ' + (c.tag ? "var ✓" : "yok") + "</span>",
-      '<span class="tag ' + (c.discord ? "ok" : "bad") + '">Discord: ' + (c.discord ? "üyesin ✓" : "üye değilsin") + "</span>",
+    const chipsHtml = [
+      '<span class="tag2 ' + (c.group ? "ok" : "bad") + '">Steam grubu: ' + (c.group ? "var ✓" : "yok") + "</span>",
+      '<span class="tag2 ' + (c.tag ? "ok" : "bad") + '">Steam tag: ' + (c.tag ? "var ✓" : "yok") + "</span>",
+      '<span class="tag2 ' + (c.discord ? "ok" : "bad") + '">Discord: ' + (c.discord ? "üyesin ✓" : "üye değilsin") + "</span>",
     ].join(" ");
-    const label = {
-      active: "Aktif",
-      expired: "Süresi dolmuş",
-      revoked: "İptal edilmiş",
-      community_required: "Topluluk şartı eksik",
-      hwid_mismatch: "HWID eşleşmiyor",
-    }[st] || st;
+    const label =
+      {
+        active: "Aktif",
+        expired: "Süresi dolmuş",
+        revoked: "İptal edilmiş",
+        community_required: "Topluluk şartı eksik",
+        hwid_mismatch: "HWID eşleşmiyor",
+      }[st] || st;
     res.innerHTML =
       '<b style="color:' + (ok ? "var(--ok)" : "var(--bad)") + '">' + (ok ? "✓ " : "✕ ") + label + "</b>" +
-      '<div class="note">Tier: <b>' + j.tier + "</b> · Bitiş: <b>" + (j.expiry_ms ? new Date(j.expiry_ms).toLocaleString("tr-TR") : "-") + "</b>" +
+      '<div class="muted" style="font-size:12.5px;margin-top:6px">Tier: <b style="color:var(--txt)">' + j.tier + "</b> · Bitiş: <b style=\"color:var(--txt)\">" +
+      (j.expiry_ms ? new Date(j.expiry_ms).toLocaleString("tr-TR") : "-") + "</b>" +
       (j.note ? " · Not: " + j.note : "") + "</div>" +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">' + chips + "</div>";
-  } catch (e) {
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">' + chipsHtml + "</div>";
+  } catch {
     res.innerHTML = '<b style="color:var(--bad)">✕ Bağlantı hatası</b>';
   }
 });
 
-fetch("/api/swan/manifest").then((r) => (r.ok ? r.json() : null)).then((m) => {
-  if (!m) return;
-  $("#sVersion").textContent = "v" + (m.version || "?");
-  if (m.sha256) $("#dlManifest").textContent = "Manifest Aç (v" + m.version + ")";
-}).catch(() => {});
-fetch("/api/site/me").then((r) => r.json()).then(() => {}).catch(() => {});
+/* Sürüm bilgisi (yalnızca görüntüleme; indirme loader üzerinden) */
+fetch("/api/swan/manifest")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((m) => {
+    if (!m || !m.version) return;
+    const v = "v" + m.version;
+    $("#ver").textContent = v;
+    $("#verPill").textContent = v;
+  })
+  .catch(() => {});
+
 loadMe();
 
 const params = new URLSearchParams(location.search);
-const login = params.get("login");
-if (login === "ok") toast("Discord girişi başarılı", "ok");
-if (login === "failed") toast("Discord girişi başarısız", "err");
-if (login === "expired") toast("Giriş bağlantısının süresi doldu", "err");
+const loginState = params.get("login");
+if (loginState === "ok") toast("Discord girişi başarılı", "ok");
+if (loginState === "failed") toast("Discord girişi başarısız", "err");
+if (loginState === "expired") toast("Giriş bağlantısının süresi doldu", "err");
 </script>
 </body>
 </html>
