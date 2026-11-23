@@ -18,14 +18,15 @@
     --txt:#f3f0ff; --dim:#9b93b5; --acc:#a78bfa; --acc2:#7c3aed;
     --ok:#35d07f; --bad:#ff5f6d; --warn:#ffb454; --discord:#5865f2;
   }
-  *{box-sizing:border-box;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+  *, *::before, *::after{box-sizing:border-box;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
   html{scroll-behavior:smooth;scroll-padding-top:86px}
   body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 "Segoe UI",Inter,system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
   img{display:block;max-width:100%;-webkit-user-drag:none;user-drag:none;pointer-events:auto}
   video{-webkit-user-drag:none;user-drag:none}
   a{color:inherit;text-decoration:none}
   button{font:inherit;color:inherit}
-  ::selection{background:#7c3aed;color:#fff}
+  ::selection{background:transparent;color:inherit}
+  ::-moz-selection{background:transparent;color:inherit}
   .wrap{width:min(1160px,100% - 40px);margin-inline:auto}
   .hidden{display:none !important}
 
@@ -94,9 +95,8 @@
   .frame:hover{border-color:rgba(167,139,250,.5);box-shadow:0 45px 130px -25px rgba(124,58,237,.65),0 0 80px -15px rgba(167,139,250,.45)}
   .frame video,.frame img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:23px}
   .frame::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse 90% 86% at 50% 50%,rgba(8,6,18,0) 58%,rgba(8,6,18,.45) 82%,rgba(8,6,18,.95) 100%),linear-gradient(180deg,rgba(8,6,18,.35) 0%,transparent 18%,transparent 80%,rgba(8,6,18,.85) 100%);pointer-events:none;box-shadow:inset 0 0 40px 15px rgba(8,6,18,.7)}
-  .media-live-badge{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:4;display:inline-flex;align-items:center;gap:8px;background:rgba(10,8,18,.88);border:1px solid rgba(167,139,250,.4);border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;color:#f3e8ff;backdrop-filter:blur(10px);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 20px rgba(0,0,0,.6);white-space:nowrap}
-  .media-live-badge .live-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:pulse 1.8s infinite}
-  .media-live-caption{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:4;text-align:center;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#c4b5fd;background:rgba(10,8,18,.84);border:1px solid rgba(167,139,250,.28);border-radius:999px;padding:6px 16px;backdrop-filter:blur(8px);white-space:nowrap}
+  .shot .vid-badge{position:absolute;top:12px;right:12px;z-index:3;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(10,8,18,.75);border:1px solid rgba(167,139,250,.35);color:#d8ccff;padding:4px 9px;border-radius:999px;backdrop-filter:blur(6px);transition:all .25s ease}
+  .shot:hover .vid-badge{background:rgba(124,58,237,.9);border-color:#a78bfa;color:#fff;transform:scale(1.06)}
   .float{position:absolute;z-index:2;display:flex;align-items:center;gap:11px;background:rgba(14,11,24,.85);border:1px solid #3a2c5c;border-radius:14px;padding:10px 13px;backdrop-filter:blur(10px);box-shadow:0 20px 50px -20px #000;transition:transform .2s ease-out,border-color .25s,box-shadow .25s}
   .float:hover{border-color:#5b46a0;box-shadow:0 25px 60px -20px rgba(124,58,237,.5)}
   .float .thumb{width:46px;height:46px;border-radius:10px;object-fit:cover;border:1px solid #4a3a78}
@@ -256,7 +256,7 @@
   .lb.open{opacity:1;visibility:visible}
   .lb figure{margin:0;width:min(1100px,100%);transform:scale(.975);transition:transform .25s}
   .lb.open figure{transform:none}
-  .lb img{width:100%;max-height:76vh;object-fit:contain;border-radius:14px;border:1px solid #33284f;background:#000}
+  .lb img,.lb video{width:100%;max-height:76vh;object-fit:contain;border-radius:14px;border:1px solid #33284f;background:#000}
   .lb figcaption{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 2px 0;font-size:12.5px;color:var(--dim)}
   .lb figcaption b{display:block;color:var(--txt);font-size:14px}
   .lb .close,.lb .navbtn{position:absolute;width:44px;height:44px;border-radius:50%;border:1px solid #3a2c5c;background:rgba(16,13,27,.85);color:#e9e2ff;cursor:pointer;display:grid;place-items:center;transition:.2s}
@@ -445,55 +445,60 @@
 
       <div class="shots">
         <div class="shot-wrap wide reveal" data-cat="menu">
-          <button class="shot" type="button" data-cat="menu" data-full="/assets/shots/menu.jpg" data-title="Lisans ve Ana Menü" data-desc="Oyun içi şık ve modern SwanChanger menüsü — anında aktivasyon ve ayarlar.">
+          <button class="shot" type="button" data-cat="menu" data-full="/assets/shots/menu.jpg" data-video="/assets/videos/menu.mp4" data-title="Lisans ve Ana Menü" data-desc="Oyun içi şık ve modern SwanChanger menüsü — anında aktivasyon ve ayarlar.">
             <img src="/assets/shots/menu.jpg" alt="CS2 ana menüde lisans aktivasyon paneli" loading="lazy">
             <video class="shot-vid" src="/assets/videos/menu.mp4" muted loop playsinline preload="none"></video>
             <span class="shine"></span>
             <span class="tag">Menü &amp; Arayüz</span>
+            <span class="vid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Video</span>
             <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
             <span class="meta"><b>Lisans &amp; Ana Menü</b><span>Oyun içi kontrol paneli · ayarlar</span></span>
           </button>
         </div>
 
         <div class="shot-wrap reveal" data-cat="knife">
-          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-nomad.jpg" data-title="Göçebe Bıçağı · Gizli Şehir" data-desc="Bıçak ve eldiven kombinasyonu aynı anda uygulanır.">
+          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-nomad.jpg" data-video="/assets/videos/knife-nomad.mp4" data-title="Göçebe Bıçağı · Gizli Şehir" data-desc="Bıçak ve eldiven kombinasyonu aynı anda uygulanır.">
             <img src="/assets/shots/knife-nomad.jpg" alt="Göçebe bıçağı ve eldiven görünümü" loading="lazy">
             <video class="shot-vid" src="/assets/videos/knife-nomad.mp4" muted loop playsinline preload="none"></video>
             <span class="shine"></span>
             <span class="tag">Bıçak &amp; Eldiven</span>
+            <span class="vid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Video</span>
             <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
             <span class="meta"><b>Göçebe Bıçağı</b><span>Gizli Şehir · eldiven uyumu</span></span>
           </button>
         </div>
 
         <div class="shot-wrap reveal" data-cat="knife">
-          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-doppler.jpg" data-title="Bayonet · Doppler" data-desc="Bıçak deseni ve eldiven uyumu oyun içinde anında değişir.">
+          <button class="shot" type="button" data-cat="knife" data-full="/assets/shots/knife-doppler.jpg" data-video="/assets/videos/knife-doppler.mp4" data-title="Bayonet · Doppler" data-desc="Bıçak deseni ve eldiven uyumu oyun içinde anında değişir.">
             <img src="/assets/shots/knife-doppler.jpg" alt="Bayonet Doppler bıçağı ve eldiven" loading="lazy">
             <video class="shot-vid" src="/assets/videos/knife-doppler.mp4" muted loop playsinline preload="none"></video>
             <span class="shine"></span>
             <span class="tag">Bıçak &amp; Eldiven</span>
+            <span class="vid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Video</span>
             <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
             <span class="meta"><b>Bayonet · Doppler</b><span>Bıçak · desen seçimi</span></span>
           </button>
         </div>
 
         <div class="shot-wrap reveal" data-cat="game">
-          <button class="shot" type="button" data-cat="game" data-full="/assets/shots/awp-printstream.jpg" data-title="AWP · Printstream" data-desc="Silah skinleri float ve desen seçenekleriyle uygulanır.">
+          <button class="shot" type="button" data-cat="game" data-full="/assets/shots/awp-printstream.jpg" data-video="/assets/videos/awp-printstream.mp4" data-title="AWP · Printstream" data-desc="Silah skinleri float ve desen seçenekleriyle uygulanır.">
             <img src="/assets/shots/awp-printstream.jpg" alt="AWP Printstream skinli oyun içi görüntü" loading="lazy">
             <video class="shot-vid" src="/assets/videos/awp-printstream.mp4" muted loop playsinline preload="none"></video>
             <span class="shine"></span>
             <span class="tag">Silahlar</span>
+            <span class="vid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Video</span>
             <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
             <span class="meta"><b>AWP · Printstream</b><span>Silah skini · oyun içi</span></span>
           </button>
         </div>
 
         <div class="shot-wrap reveal" data-cat="helper">
-          <button class="shot" type="button" data-cat="helper" data-full="/assets/shots/hero.jpg" data-title="Bhop &amp; Lineup Helper" data-desc="Akıcı bunnyhop zamanlaması, FOV ayarı ve bomba atış kılavuzu.">
+          <button class="shot" type="button" data-cat="helper" data-full="/assets/shots/hero.jpg" data-video="/assets/videos/helper.mp4" data-title="Bhop &amp; Lineup Helper" data-desc="Akıcı bunnyhop zamanlaması, FOV ayarı ve bomba atış kılavuzu.">
             <img src="/assets/shots/hero.jpg" alt="Bhop ve Lineup Helper kılavuzu" loading="lazy">
             <video class="shot-vid" src="/assets/videos/helper.mp4" muted loop playsinline preload="none"></video>
             <span class="shine"></span>
             <span class="tag">Helper &amp; Bhop</span>
+            <span class="vid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Video</span>
             <span class="zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4M11 8v6M8 11h6"/></svg></span>
             <span class="meta"><b>Bhop &amp; Lineup Helper</b><span>Akıcı zıplama · FOV · bomba çizgileri</span></span>
           </button>
@@ -706,6 +711,7 @@
   </button>
   <figure>
     <img id="lbImg" src="" alt="">
+    <video id="lbVideo" class="hidden" autoplay loop controls muted playsinline></video>
     <figcaption>
       <div><b id="lbTitle">—</b><span id="lbDesc"></span></div>
       <span id="lbCount">—</span>
@@ -826,6 +832,7 @@ $$(".features .feat, .plans .plan, .shots .shot-wrap").forEach((el, i) => {
 /* Lightbox */
 const lb = $("#lightbox");
 const lbImg = $("#lbImg");
+const lbVideo = $("#lbVideo");
 const lbTitle = $("#lbTitle");
 const lbDesc = $("#lbDesc");
 const lbCount = $("#lbCount");
@@ -837,11 +844,28 @@ function showShot(pos) {
   if (!lbList.length) return;
   lbPos = (pos + lbList.length) % lbList.length;
   const s = lbList[lbPos];
-  lbImg.src = s.dataset.full;
-  lbImg.alt = s.dataset.title || "";
   lbTitle.textContent = s.dataset.title || "";
   lbDesc.textContent = s.dataset.desc || "";
   lbCount.textContent = lbPos + 1 + " / " + lbList.length;
+
+  const vidUrl = s.dataset.video || (s.querySelector("video.shot-vid") ? s.querySelector("video.shot-vid").getAttribute("src") : "");
+  if (vidUrl) {
+    lbImg.classList.add("hidden");
+    lbVideo.classList.remove("hidden");
+    lbVideo.src = vidUrl;
+    lbVideo.currentTime = 0;
+    const p = lbVideo.play();
+    if (p && p.catch) p.catch(() => {});
+  } else {
+    if (lbVideo) {
+      lbVideo.pause();
+      lbVideo.src = "";
+      lbVideo.classList.add("hidden");
+    }
+    lbImg.classList.remove("hidden");
+    lbImg.src = s.dataset.full;
+    lbImg.alt = s.dataset.title || "";
+  }
 }
 function openLb(shot) {
   lbList = shotEls.filter((s) => !s.closest(".shot-wrap").classList.contains("hide"));
@@ -855,6 +879,16 @@ function closeLb() {
   lb.classList.remove("open");
   lb.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+  if (lbVideo) {
+    lbVideo.pause();
+    lbVideo.src = "";
+  }
+}
+if (lbVideo) {
+  lbVideo.addEventListener("ended", () => {
+    lbVideo.currentTime = 0;
+    lbVideo.play().catch(() => {});
+  });
 }
 shotEls.forEach((s) => s.addEventListener("click", () => openLb(s)));
 $("#lbClose").addEventListener("click", closeLb);
@@ -874,6 +908,11 @@ document.addEventListener("keydown", (e) => {
 $$(".shot").forEach((shot) => {
   const vid = shot.querySelector("video.shot-vid");
   if (!vid) return;
+
+  vid.addEventListener("ended", () => {
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+  });
 
   shot.addEventListener("pointerenter", () => {
     vid.currentTime = 0;
