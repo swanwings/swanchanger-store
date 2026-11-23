@@ -353,11 +353,8 @@
       <div class="hero-art">
         <div class="frame">
           <div class="media-live-badge"><span class="live-dot"></span> Canlı Menü &amp; Oynanış Vitrini</div>
-          <video id="heroVideo" autoplay loop muted playsinline poster="/assets/shots/hero.jpg">
-            <source src="/assets/gameplay.mp4" type="video/mp4">
-            <source src="/assets/preview.mp4" type="video/mp4">
-            <source src="/assets/preview.webm" type="video/webm">
-            <img src="/assets/shots/hero.jpg" alt="CS2 oyun içi menü ve skin görünümü" fetchpriority="high">
+          <video id="heroVideo" autoplay loop muted playsinline preload="auto" poster="/assets/shots/gameplay-poster.jpg?v=2">
+            <source src="/assets/gameplay.mp4?v=2" type="video/mp4">
           </video>
           <div class="media-live-caption">SwanChanger CS2 · Oynanış &amp; Skin Changer Vitrini</div>
         </div>
@@ -1022,6 +1019,21 @@ const loginState = params.get("login");
 if (loginState === "ok") toast("Discord girişi başarılı", "ok");
 if (loginState === "failed") toast("Discord girişi başarısız", "err");
 if (loginState === "expired") toast("Giriş bağlantısının süresi doldu", "err");
+
+/* Hero video garantili oynatma */
+const heroVid = document.getElementById("heroVideo");
+if (heroVid) {
+  heroVid.muted = true;
+  heroVid.defaultMuted = true;
+  const tryPlay = () => {
+    const p = heroVid.play();
+    if (p && p.catch) p.catch(() => {});
+  };
+  tryPlay();
+  ["click", "touchstart", "scroll", "keydown"].forEach((e) => {
+    window.addEventListener(e, tryPlay, { once: true, passive: true });
+  });
+}
 </script>
 </body>
 </html>
