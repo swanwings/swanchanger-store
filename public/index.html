@@ -578,7 +578,7 @@
           <a class="btn primary" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Aylık Al · <span id="ctaMonthly">$14.99</span></a>
         </div>
       </div>
-      <p class="paynote">Lisans, Discord üzerinden teslim edilir. Topluluk şartı (Steam grubu + Discord üyeliği) aktif kalmalıdır.</p>
+      <p class="paynote">Lisans, Discord üzerinden teslim edilir. Kurulum gerektirmez, tek tıkla çalışır.</p>
     </div>
   </section>
 
@@ -605,12 +605,12 @@
 
       <div class="dl-card reveal">
         <div class="kv"><span>Sürüm</span><b id="ver">v36</b></div>
-        <div class="kv"><span>Boyut</span><b>15,8 MB · 16.562.688 bayt</b></div>
+        <div class="kv"><span>Boyut</span><b>15,8 MB · 16.584.704 bayt</b></div>
         <div class="kv"><span>Platform</span><b>Windows 10 / 11 · x64</b></div>
         <div class="kv"><span>Dosya</span><b>SwanChanger.exe</b></div>
         <div class="sha">
           <div class="lbl"><span>Loader SHA-256</span><button class="copy" id="copySha" type="button">Kopyala</button></div>
-          <code>d50f251a4dfcb848aa15389539f70b3fdb4ac5355ddd04ff8034ce742ef51859</code>
+          <code>0b20a5b61ef092822fea7eb7b80b5621de9d7029c8ee86bde9f7df46ab656d02</code>
         </div>
       </div>
     </div>
@@ -621,7 +621,7 @@
       <div class="sec-head reveal">
         <span class="eyebrow">Hesap</span>
         <h2>Lisansını kontrol et</h2>
-        <p class="sub">Discord ile giriş yap; lisans durumunu ve topluluk şartlarını tek ekranda gör.</p>
+        <p class="sub">Discord ile giriş yap; lisans durumunu ve geçerlilik süreni tek ekranda gör.</p>
       </div>
 
       <div class="account">
@@ -656,23 +656,19 @@
             </div>
 
             <div class="res" id="res"></div>
-
-            <div class="warn">
-              <b>Uyarı:</b> Steam grubundan, Steam tag'ından veya Discord sunucusundan ayrılırsan lisansın otomatik iptal edilir. Yeniden katılıp doğruladığında lisans tekrar aktif olur.
-            </div>
           </div>
         </div>
 
         <div class="card reveal">
-          <h3 style="margin:0 0 8px;font-size:15px">Topluluk adımları</h3>
-          <p class="muted" style="font-size:13.5px;margin:0">Her lisans için üç adım zorunlu:</p>
+          <h3 style="margin:0 0 8px;font-size:15px">Topluluk &amp; Destek</h3>
+          <p class="muted" style="font-size:13.5px;margin:0">Güncellemeler ve duyurular için topluluğumuza katılabilirsin:</p>
           <ol class="steps">
-            <li><b>Steam grubuna katıl</b> — <a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">steamcommunity.com/groups/swanwings</a></li>
-            <li><b>Steam tag'ını al</b> — profilinden “SwanWings” etiketini seç (profil herkese açık olmalı)</li>
-            <li><b>Discord sunucusuna katıl</b> — <a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">discord.gg/zT8mfwCT56</a></li>
+            <li><b>Discord sunucumuza katıl</b> — <a href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">discord.gg/zT8mfwCT56</a></li>
+            <li><b>Steam grubumuza katıl</b> — <a href="https://steamcommunity.com/groups/swanwings" target="_blank" rel="noopener">steamcommunity.com/groups/swanwings</a></li>
+            <li><b>7/24 Destek</b> — Soruların veya lisans işlemlerin için Discord bilet sistemini kullan.</li>
           </ol>
           <div class="warn" style="border-left-color:#7c3aed;background:#120d20;color:#cbbcf0">
-            Doğrulama oyun içindeki lisans ekranında otomatik yapılır; kartlar yeşil tik olunca lisans anahtarı alanı açılır.
+            Topluluk katılımı tamamen opsiyoneldir. Lisansını loader veya oyun içi menüden doğrudan aktive edebilirsin.
           </div>
         </div>
       </div>
@@ -996,7 +992,7 @@ if (currencyToggleBtn) {
 }
 
 /* SHA kopyala */
-const SHA = "d50f251a4dfcb848aa15389539f70b3fdb4ac5355ddd04ff8034ce742ef51859";
+const SHA = "0b20a5b61ef092822fea7eb7b80b5621de9d7029c8ee86bde9f7df46ab656d02";
 $("#copySha").addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(SHA);
