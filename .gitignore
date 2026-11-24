@@ -1,4 +1,6 @@
 .netlify/
+.firebase/
 node_modules/
 *.log
 .DS_Store
+public/downloads/*.exe
