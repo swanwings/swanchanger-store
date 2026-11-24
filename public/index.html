@@ -69,6 +69,11 @@
   .btn.primary:hover{filter:brightness(1.08);transform:translateY(-3px) scale(1.015);box-shadow:0 20px 42px -14px rgba(124,58,237,1),0 0 25px rgba(167,139,250,.45)}
   .btn.discord{background:var(--discord);border-color:var(--discord);color:#fff;font-weight:700}
   .btn.discord:hover{filter:brightness(1.1);box-shadow:0 12px 28px -12px rgba(88,101,242,.85)}
+  .btn.google-btn{background:#fff;color:#111;border:0;font-weight:700;box-shadow:0 8px 24px -10px rgba(255,255,255,.35)}
+  .btn.google-btn:hover{background:#f3f0ff;box-shadow:0 12px 30px -10px rgba(255,255,255,.55)}
+  .nav-user{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 5px;border-radius:999px;border:1px solid var(--line2);background:rgba(22,17,38,.85);font-size:12.5px;font-weight:600;color:#e9e2ff;transition:border-color .2s}
+  .nav-user:hover{border-color:var(--acc)}
+  .nav-user img{width:24px;height:24px;border-radius:50%;object-fit:cover}
   .btn.ghost{background:transparent}
   .btn.small{padding:8px 14px;font-size:12.5px;border-radius:9px}
   .btn.block{width:100%}
@@ -320,6 +325,14 @@
       <a href="#hesap">Hesap</a>
     </nav>
     <div class="nav-cta">
+      <button class="btn small google-btn" id="navLoginBtn" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.77 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.91z"/><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.88 3.01c2.27-2.09 3.54-5.17 3.54-8.83z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#34A853" d="M12 23c3.24 0 5.95-1.07 7.93-2.91l-3.88-3.01c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.62v2.92C3.44 20.53 7.42 23 12 23z"/></svg>
+        <span>Giriş Yap</span>
+      </button>
+      <a class="nav-user hidden" id="navUserPill" href="#hesap">
+        <img id="navAvatar" src="" alt="">
+        <span id="navName">—</span>
+      </a>
       <a class="btn small discord" href="https://discord.gg/zT8mfwCT56" target="_blank" rel="noopener">Discord</a>
       <button class="burger" id="navToggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="mainMenu">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -607,15 +620,18 @@
       <div class="sec-head reveal">
         <span class="eyebrow">Hesap</span>
         <h2>Lisansını kontrol et</h2>
-        <p class="sub">Discord ile giriş yap; lisans durumunu ve geçerlilik süreni tek ekranda gör.</p>
+        <p class="sub">Google (Gmail) ile giriş yap; lisans durumunu ve geçerlilik süreni tek ekranda gör.</p>
       </div>
 
       <div class="account">
         <div class="card reveal">
           <div id="loggedOut" class="lock">
             Giriş yapmadan lisans sorgulayamazsın.<br><br>
-            <button class="btn discord" id="loginBtn" type="button">Discord ile Giriş Yap</button>
-            <div class="muted" style="font-size:12px;margin-top:12px">Giriş yalnızca Discord OAuth ile yapılır; şifre veya bot gerekmez.</div>
+            <button class="btn google-btn" id="loginBtn" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.77 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.91z"/><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58l3.88 3.01c2.27-2.09 3.54-5.17 3.54-8.83z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#34A853" d="M12 23c3.24 0 5.95-1.07 7.93-2.91l-3.88-3.01c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.62v2.92C3.44 20.53 7.42 23 12 23z"/></svg>
+              Google (Gmail) ile Giriş Yap
+            </button>
+            <div class="muted" style="font-size:12px;margin-top:12px">Giriş Google Firebase Authentication ile güvenle yapılır.</div>
           </div>
 
           <div id="loggedIn" class="hidden">
@@ -626,8 +642,7 @@
                 <div class="id" id="uId">—</div>
               </div>
               <div class="tags">
-                <span class="tag2" id="tagDiscord">Discord</span>
-                <span class="tag2" id="tagMember">Sunucu üyeliği</span>
+                <span class="tag2 ok" id="tagGoogle">Gmail Doğrulandı ✓</span>
               </div>
             </div>
 
@@ -937,68 +952,6 @@ $("#copySha").addEventListener("click", async () => {
   }
 });
 
-/* Discord girişi & Topluluk yönlendirmesi */
-function startLogin() {
-  fetch("/api/site/login", { redirect: "manual" })
-    .then((r) => {
-      if (r.status === 503) {
-        window.open("https://discord.gg/zT8mfwCT56", "_blank");
-        toast("Discord sunucumuza yönlendiriliyorsunuz…", "ok");
-        return;
-      }
-      if (r.type === "opaqueredirect" || r.status === 0) {
-        window.location.href = "/api/site/login";
-        return;
-      }
-      const loc = r.headers.get("location");
-      if (loc) {
-        window.location.href = loc;
-        return;
-      }
-      window.open("https://discord.gg/zT8mfwCT56", "_blank");
-    })
-    .catch(() => {
-      window.open("https://discord.gg/zT8mfwCT56", "_blank");
-      toast("Discord sunucumuza yönlendiriliyorsunuz…", "ok");
-    });
-}
-
-const loggedOut = $("#loggedOut");
-const loggedIn = $("#loggedIn");
-
-function showLoggedOut() {
-  loggedOut.classList.remove("hidden");
-  loggedIn.classList.add("hidden");
-}
-
-async function loadMe() {
-  try {
-    const r = await fetch("/api/site/me");
-    const j = await r.json();
-    if (!j.ok) {
-      showLoggedOut();
-      return;
-    }
-    loggedOut.classList.add("hidden");
-    loggedIn.classList.remove("hidden");
-    $("#uAvatar").src = j.user.avatar || "";
-    $("#uName").textContent = j.user.global_name || j.user.username;
-    $("#uId").textContent = j.user.username + " · " + j.user.id;
-    $("#tagDiscord").textContent = "Discord bağlı ✓";
-    $("#tagDiscord").className = "tag2 ok";
-    $("#tagMember").textContent = j.member ? "Sunucu üyesin ✓" : "Sunucuya katıl";
-    $("#tagMember").className = "tag2 " + (j.member ? "ok" : "bad");
-  } catch {
-    showLoggedOut();
-  }
-}
-
-$("#loginBtn").addEventListener("click", startLogin);
-$("#logoutBtn").addEventListener("click", async () => {
-  await fetch("/api/site/logout", { method: "POST" });
-  location.reload();
-});
-
 $("#copyMeBtn").addEventListener("click", () => {
   const v = $("#hw").value.trim();
   if (!v) {
@@ -1022,66 +975,29 @@ $("#queryBtn").addEventListener("click", async () => {
   res.classList.add("show");
   res.innerHTML = '<span class="muted">Sorgulanıyor…</span>';
   try {
-    const r = await fetch("/api/site/license", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ key, hwid }),
-    });
+    const r = await fetch("https://nihujohiuhjiuoj.netlify.app/api/report?k=" + encodeURIComponent(key) + "&h=" + encodeURIComponent(hwid || "00000000000000000000000000000000"));
     const j = await r.json();
-    if (!j.ok) {
-      const map = {
-        invalid_key: "Anahtar biçimi geçersiz.",
-        unknown_key: "Bu anahtar kayıtlı değil.",
-        login_required: "Önce giriş yap.",
-      };
-      res.innerHTML = '<b style="color:var(--bad)">✕ ' + (map[j.status] || "Sorgulanamadı.") + "</b>";
+    if (!j || !j.s) {
+      res.innerHTML = '<b style="color:var(--bad)">✕ Sorgulanamadı.</b>';
       return;
     }
-    const st = j.status;
-    const ok = st === "active";
-    const c = j.community || {};
-    const chipsHtml = [
-      '<span class="tag2 ' + (c.group ? "ok" : "bad") + '">Steam grubu: ' + (c.group ? "var ✓" : "yok") + "</span>",
-      '<span class="tag2 ' + (c.tag ? "ok" : "bad") + '">Steam tag: ' + (c.tag ? "var ✓" : "yok") + "</span>",
-      '<span class="tag2 ' + (c.discord ? "ok" : "bad") + '">Discord: ' + (c.discord ? "üyesin ✓" : "üye değilsin") + "</span>",
-    ].join(" ");
-    const label =
-      {
-        active: "Aktif",
-        expired: "Süresi dolmuş",
-        revoked: "İptal edilmiş",
-        community_required: "Topluluk şartı eksik",
-        hwid_mismatch: "HWID eşleşmiyor",
-      }[st] || st;
+    const ok = j.s === "ok";
+    const labelMap = {
+      ok: "Aktif",
+      expired: "Süresi dolmuş",
+      revoked: "İptal edilmiş",
+      hwid_mismatch: "HWID eşleşmiyor",
+      banned: "Yasaklı HWID",
+      unknown: "Anahtar bulunamadı"
+    };
+    const label = labelMap[j.s] || j.s;
     res.innerHTML =
       '<b style="color:' + (ok ? "var(--ok)" : "var(--bad)") + '">' + (ok ? "✓ " : "✕ ") + label + "</b>" +
-      '<div class="muted" style="font-size:12.5px;margin-top:6px">Tier: <b style="color:var(--txt)">' + j.tier + "</b> · Bitiş: <b style=\"color:var(--txt)\">" +
-      (j.expiry_ms ? new Date(j.expiry_ms).toLocaleString("tr-TR") : "-") + "</b>" +
-      (j.note ? " · Not: " + j.note : "") + "</div>" +
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">' + chipsHtml + "</div>";
+      (j.x ? '<div class="muted" style="font-size:12.5px;margin-top:6px">Bitiş: <b style="color:var(--txt)">' + new Date(j.x).toLocaleString("tr-TR") + "</b></div>" : "");
   } catch {
     res.innerHTML = '<b style="color:var(--bad)">✕ Bağlantı hatası</b>';
   }
 });
-
-/* Sürüm bilgisi (yalnızca görüntüleme; indirme loader üzerinden) */
-fetch("/api/swan/manifest")
-  .then((r) => (r.ok ? r.json() : null))
-  .then((m) => {
-    if (!m || !m.version) return;
-    const v = "v" + m.version;
-    $("#ver").textContent = v;
-    $("#verPill").textContent = v;
-  })
-  .catch(() => {});
-
-loadMe();
-
-const params = new URLSearchParams(location.search);
-const loginState = params.get("login");
-if (loginState === "ok") toast("Discord girişi başarılı", "ok");
-if (loginState === "failed") toast("Discord girişi başarısız", "err");
-if (loginState === "expired") toast("Giriş bağlantısının süresi doldu", "err");
 
 /* Hero video garantili oynatma */
 const heroVid = document.getElementById("heroVideo");
@@ -1097,6 +1013,69 @@ if (heroVid) {
     window.addEventListener(e, tryPlay, { once: true, passive: true });
   });
 }
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDF-KHxbi0nk6fYx8DmfzNUnl_gASov9hc",
+  authDomain: "swanchanger.firebaseapp.com",
+  projectId: "swanchanger",
+  storageBucket: "swanchanger.firebasestorage.app",
+  messagingSenderId: "18917783984",
+  appId: "1:18917783984:web:7d46f61adf1143f6a3fe75",
+  measurementId: "G-64YLR92V06"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+
+async function doGoogleLogin() {
+  try {
+    await signInWithPopup(auth, provider);
+    toast("Google ile giriş başarılı!", "ok");
+  } catch (err) {
+    if (err.code === "auth/popup-closed-by-user") return;
+    if (err.code === "auth/operation-not-allowed") {
+      toast("Firebase Console -> Authentication -> Google girişini aktif etmelisin.", "err");
+    } else {
+      toast("Giriş hatası: " + (err.message || err.code), "err");
+    }
+  }
+}
+
+document.getElementById("loginBtn")?.addEventListener("click", doGoogleLogin);
+document.getElementById("navLoginBtn")?.addEventListener("click", doGoogleLogin);
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await signOut(auth);
+  toast("Çıkış yapıldı", "ok");
+});
+
+onAuthStateChanged(auth, (user) => {
+  const loggedOut = document.getElementById("loggedOut");
+  const loggedIn = document.getElementById("loggedIn");
+  const navLoginBtn = document.getElementById("navLoginBtn");
+  const navUserPill = document.getElementById("navUserPill");
+  if (user) {
+    loggedOut?.classList.add("hidden");
+    loggedIn?.classList.remove("hidden");
+    navLoginBtn?.classList.add("hidden");
+    navUserPill?.classList.remove("hidden");
+    document.getElementById("uAvatar").src = user.photoURL || "/assets/shots/logo.png";
+    document.getElementById("uName").textContent = user.displayName || "Kullanıcı";
+    document.getElementById("uId").textContent = user.email || user.uid;
+    document.getElementById("navAvatar").src = user.photoURL || "/assets/shots/logo.png";
+    document.getElementById("navName").textContent = (user.displayName || "Hesabım").split(" ")[0];
+  } else {
+    loggedOut?.classList.remove("hidden");
+    loggedIn?.classList.add("hidden");
+    navLoginBtn?.classList.remove("hidden");
+    navUserPill?.classList.add("hidden");
+  }
+});
 </script>
 </body>
 </html>
