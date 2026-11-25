@@ -176,12 +176,12 @@
   .gal-cta .btn{position:relative;margin-top:8px;align-self:flex-start}
 
   .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:880px;margin:32px auto 0}
-  .plan{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(22,17,38,.92),rgba(13,10,22,.97));border:1px solid var(--line);border-radius:20px;padding:30px;transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;overflow:hidden}
+  .plan{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(22,17,38,.92),rgba(13,10,22,.97));border:1px solid var(--line);border-radius:20px;padding:30px;transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;overflow:visible}
   .plan:hover{transform:translateY(-6px);border-color:#533e85;box-shadow:0 35px 80px -40px rgba(124,58,237,.7)}
   .plan.hot{border-color:#7c3aed;background:linear-gradient(180deg,rgba(42,28,76,.96),rgba(17,12,32,.98));box-shadow:0 0 50px -18px rgba(124,58,237,.85),0 35px 90px -40px rgba(0,0,0,.95);animation:planGlow 4.5s ease-in-out infinite alternate}
   @keyframes planGlow{0%{box-shadow:0 0 38px -20px rgba(124,58,237,.6),0 30px 70px -35px #000;border-color:#6d28d9}100%{box-shadow:0 0 70px -12px rgba(167,139,250,.9),0 40px 100px -35px rgba(0,0,0,.95);border-color:#a78bfa}}
   .plan.hot:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 0 85px -10px rgba(167,139,250,1),0 45px 110px -35px rgba(0,0,0,1)}
-  .flag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffffff,#d8ccff 55%,#a78bfa);color:#140824;font-size:10px;font-weight:900;letter-spacing:.14em;padding:5px 15px;border-radius:999px;white-space:nowrap;box-shadow:0 0 25px rgba(167,139,250,.7);overflow:hidden}
+  .flag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffffff,#d8ccff 55%,#a78bfa);color:#140824;font-size:10px;font-weight:900;letter-spacing:.14em;padding:5px 15px;border-radius:999px;white-space:nowrap;box-shadow:0 0 25px rgba(167,139,250,.7);overflow:hidden;z-index:10}
   .flag::after{content:"";position:absolute;inset:-50% -120%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);transform:rotate(25deg);animation:badgeShine 3.6s cubic-bezier(.4,0,.2,1) infinite}
   @keyframes badgeShine{0%,60%{transform:translateX(-140%) rotate(25deg)}100%{transform:translateX(140%) rotate(25deg)}}
   .plan h3{margin:0;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#cfc4ea}
@@ -583,9 +583,132 @@ body .armory .stage-canvas,body .armory .stage-canvas canvas,body .lobby[data-st
 .launch-steps a:after,.armory-catalog-link:after,.collection-pro-link:after{content:"";transform-origin:0;background:currentColor;height:2px;transition:transform .24s cubic-bezier(.23,1,.32,1);position:absolute;bottom:3px;left:0;right:0;transform:scaleX(0)}
 .launch-steps a:hover:after,.armory-catalog-link:hover:after,.collection-pro-link:hover:after{transform:scaleX(1)}
 
+
+  /* SwanChanger 3D Armory Layout Alignment */
+  @media (min-width: 981px) {
+    .armory-inner.lobby-wrap {
+      max-width: 1400px;
+      margin-inline: auto;
+      padding-inline: 40px;
+    }
+    .armory .weapon-stage {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      column-gap: 50px;
+    }
+    .armory-chapter {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .armory-copy {
+      padding-left: 25px;
+      max-width: 540px;
+    }
+  }
+
+  /* SwanChanger Custom Purple Cursor System */
+  @media (hover: hover) and (pointer: fine) {
+    * {
+      cursor: none !important;
+    }
+    .custom-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background: #c4b5fd;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(167, 139, 250, 0.9);
+      transition: width 0.15s ease, height 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+    .custom-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 34px;
+      height: 34px;
+      border: 1.5px solid rgba(167, 139, 250, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999998;
+      transform: translate(-50%, -50%);
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), height 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, transform 0.08s linear;
+      box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
+    }
+    body.cursor-hover .custom-cursor-ring {
+      width: 52px;
+      height: 52px;
+      border-color: #a78bfa;
+      background: rgba(124, 58, 237, 0.12);
+      box-shadow: 0 0 24px rgba(167, 139, 250, 0.65);
+    }
+    body.cursor-hover .custom-cursor-dot {
+      background: #ffffff;
+      width: 6px;
+      height: 6px;
+      box-shadow: 0 0 14px #ffffff;
+    }
+    body.cursor-grab .custom-cursor-ring {
+      width: 44px;
+      height: 44px;
+      border: 2px dashed #00f0ff;
+      border-radius: 50%;
+      background: rgba(0, 240, 255, 0.1);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+      animation: cursorSpin 6s linear infinite;
+    }
+    body.cursor-grab .custom-cursor-dot {
+      background: #00f0ff;
+      box-shadow: 0 0 12px #00f0ff;
+    }
+    body.cursor-grabbing .custom-cursor-ring {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #a78bfa;
+      background: rgba(124, 58, 237, 0.3);
+      box-shadow: 0 0 25px rgba(167, 139, 250, 0.85);
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+    body.cursor-grabbing .custom-cursor-dot {
+      background: #ffffff;
+      width: 10px;
+      height: 10px;
+    }
+    @keyframes cursorSpin {
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .click-ripple {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid #a78bfa;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, rgba(124, 58, 237, 0.15) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 999997;
+      transform: translate(-50%, -50%) scale(0.2);
+      animation: rippleExpand 0.55s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes rippleExpand {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.4);
+      }
+    }
+  }
+
 </style>
 </head>
 <body>
+<!-- SwanChanger Custom Cursor Elements -->
+<div class="custom-cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="custom-cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
 <div class="orbs" aria-hidden="true"></div>
 <div class="bg-grid" aria-hidden="true"></div>
 
@@ -1390,5 +1513,91 @@ onAuthStateChanged(auth, (user) => {
 <!-- 3D WEAPON STAGE SCRIPT -->
 <script type="module" src="/_astro/WeaponStage.astro_astro_type_script_index_0_lang.DAo8-q84.js"></script>
 
+<script>
+// SwanChanger Custom Cursor & Ripple System
+(function() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  if (!dot || !ring) return;
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let ringX = mouseX;
+  let ringY = mouseY;
+  let isMoving = false;
+
+  window.addEventListener('pointermove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+    if (!isMoving) {
+      ringX = mouseX;
+      ringY = mouseY;
+      isMoving = true;
+    }
+  }, { passive: true });
+
+  function renderCursor() {
+    ringX += (mouseX - ringX) * 0.22;
+    ringY += (mouseY - ringY) * 0.22;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(renderCursor);
+  }
+  requestAnimationFrame(renderCursor);
+
+  const hoverSelector = 'a, button, input, [role="button"], .skin-choice, .lineup-card, .feat, .plan, summary, .close, .navbtn, select';
+  
+  document.addEventListener('pointerover', (e) => {
+    const target = e.target;
+    if (target.closest('.stage-canvas') || target.closest('.weapon-stage canvas')) {
+      document.body.classList.remove('cursor-hover');
+      document.body.classList.add('cursor-grab');
+    } else if (target.closest(hoverSelector)) {
+      document.body.classList.remove('cursor-grab');
+      document.body.classList.add('cursor-hover');
+    } else {
+      document.body.classList.remove('cursor-hover', 'cursor-grab', 'cursor-grabbing');
+    }
+  });
+
+  document.addEventListener('pointerdown', (e) => {
+    const target = e.target;
+    if (target.closest('.stage-canvas') || target.closest('.weapon-stage canvas')) {
+      document.body.classList.add('cursor-grabbing');
+    }
+
+    const ripple = document.createElement('div');
+    ripple.className = 'click-ripple';
+    const size = 60;
+    ripple.style.width = size + 'px';
+    ripple.style.height = size + 'px';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    document.body.appendChild(ripple);
+
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  });
+
+  document.addEventListener('pointerup', () => {
+    document.body.classList.remove('cursor-grabbing');
+  });
+
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+  });
+
+  document.addEventListener('mouseenter', () => {
+    dot.style.opacity = '1';
+    ring.style.opacity = '1';
+  });
+})();
+</script>
 </body>
 </html>
