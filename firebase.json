@@ -5,22 +5,24 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "**/*.exe"
+      "**/*.exe",
+      "**/*.dll"
     ],
     "redirects": [
+      {
+        "source": "/",
+        "destination": "https://swanchanger.swanwings.workers.dev/",
+        "type": 302
+      },
       {
         "source": "/downloads/SwanChanger.exe",
         "destination": "https://raw.githubusercontent.com/swanwings/swanchanger-store/main/public/downloads/SwanChanger.exe",
         "type": 302
-      }
-    ],
-    "rewrites": [
+      },
       {
-        "source": "/api/**",
-        "function": {
-          "functionId": "api",
-          "region": "europe-west1"
-        }
+        "source": "/:path*",
+        "destination": "https://swanchanger.swanwings.workers.dev/:path",
+        "type": 302
       }
     ],
     "headers": [
@@ -40,12 +42,6 @@
         ]
       },
       {
-        "source": "/_astro/**",
-        "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-        ]
-      },
-      {
         "source": "/assets/**",
         "headers": [
           { "key": "Cache-Control", "value": "public, max-age=3600" }
@@ -53,22 +49,6 @@
       }
     ]
   },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "api",
-      "runtime": "nodejs22",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local",
-        ".env",
-        ".env.*"
-      ]
-    }
-  ],
   "firestore": {
     "rules": "firestore.rules"
   }

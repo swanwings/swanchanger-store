@@ -1,0 +1,44 @@
+// Cloudflare Worker yapilandirmasi (wrangler)
+// Kullanım:
+//   npx wrangler d1 execute swanchanger --remote --file=./worker/schema.sql
+//   npx wrangler secret put ADMIN_KEY        -> panel giris sifresi
+//   npx wrangler secret put SITE_SESSION_SECRET
+//   npx wrangler secret put LOADOUT_KEY
+//   npx wrangler deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "swanchanger",
+  "main": "worker/src/index.mjs",
+  "compatibility_date": "2026-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Statik dosyalar (magaza + panel + assets) ayni Worker'dan servis edilir.
+  // Boylece panel ile API ayni origin'de olur -> session cookie sorunu yok.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // D1 (SQLite) - Netlify Blobs KV yerine
+  "d1_databases": [
+    {
+      "binding": "KV",
+      "database_name": "swanchanger",
+      "database_id": "cad94aac-ff0a-4d0e-8182-88709449deac",
+      "migrations_dir": "worker/migrations"
+    }
+  ],
+
+  "vars": {
+    "PUBLIC_SITE_URL": "https://swanchanger.web.app",
+    "DLL_SOURCE_URL": "https://raw.githubusercontent.com/swanwings/swanchanger-store/main/public/downloads/SwanChanger.dll",
+    "DISCORD_CLIENT_ID": "",
+    "DISCORD_INVITE": "",
+    "DISCORD_WEBHOOK": ""
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "swanchanger-api",
+  "description": "SwanChanger API - Cloudflare Worker (D1 + AES-256-GCM loadout sifreleme)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "db:init": "wrangler d1 execute swanchanger --remote --file=./schema.sql",
+    "db:local": "wrangler d1 execute swanchanger --local --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

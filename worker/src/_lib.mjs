@@ -1,62 +1,70 @@
 // SwanChanger Dashboard — ortak yardımcılar
-// Firebase Cloud Functions (2. nesil, Node 22) için yazıldı.
+// Cloudflare Worker (Workers + D1) için yazıldı.
 //
-// Netlify Blobs (KV) -> Cloud Firestore. Netlify'in @netlify/blobs API'si birebir
-// taklit edilir: get(key,{type:"json"}) / setJSON / delete / list({prefix}).
+// Netlify Blobs (KV) -> Cloudflare D1 (SQLite). Netlify'in @netlify/blobs API'si
+// birebir taklit edilir: get(key,{type:"json"}) / setJSON / delete / list({prefix}).
 // Böylece report/keys/peer/list/users/... dosyaları mantık değişmeden çalışır.
 //
-// Loadout'lar (skinler) Firestore'da SIFRELI tutulur: AES-256-GCM, anahtar sadece
+// Loadout'lar (skinler) D1'de SIFRELI tutulur: AES-256-GCM, anahtar sadece
 // sunucuda (LOADOUT_KEY secret'i ya da admin/session secret'ından türetilir).
-// Firestore kuralları da istemciye tamamen kapalı -> veritabanı dökümü bile
-// ciphertext görür, skinleri yalnızca sahibi (panel) çözebilir.
+// D1 dökümü bile ciphertext görür, skinleri yalnızca sahibi (panel) çözebilir.
+//
+// NOT: Node API'leri (node:crypto, Buffer, process.env) KULLANILMAZ — Worker
+// runtime'ında WebCrypto (crypto.subtle) ve D1 binding kullanılır.
 
-import { initializeApp, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-import { createCipheriv, createDecipheriv, createHash, randomBytes, hkdfSync } from "node:crypto";
+export const BIG_MARK = "__big";
+export const PART_SEP = "::part:";
+// D1 satır boyutu sınırı (2 MB) ve SQL ifadesi sınırı (100 KB) içinde kalmak
+// için parcalar 90 KB'ta kirilir.
+const CHUNK_CHARS = 90_000;
 
-// ------------------------------------------------------------------ Firestore
+// ------------------------------------------------------------------ env
 
-let db = null;
+// Worker binding'leri (vars/secret) globalde tutulur; handler'lar process.env
+// görmez ama getEnv() aynı arayüzü sunar.
+export function setEnv(env) {
+  globalThis.__SWAN_ENV = env || {};
+}
 
-function firestore() {
-  if (!db) {
-    if (!getApps().length) {
-      initializeApp({ projectId: process.env.GCLOUD_PROJECT || process.env.FIREBASE_PROJECT_ID || "swanchanger" });
-    }
-    db = getFirestore();
+export const getEnv = (k, fallback = "") => {
+  const env = globalThis.__SWAN_ENV || {};
+  if (env && env[k]) return env[k];
+  if (typeof process !== "undefined" && process.env && process.env[k]) return process.env[k];
+  return fallback;
+};
+
+export const ADMIN_KEY = () => getEnv("ADMIN_KEY", "");
+export const SESSION_SECRET = () => getEnv("SITE_SESSION_SECRET", "") || ADMIN_KEY();
+
+// ------------------------------------------------------------------ D1
+
+const TABLE = "kv";
+
+function d1() {
+  const env = globalThis.__SWAN_ENV || {};
+  return env.KV || env.DB || null;
+}
+
+// D1 sorguları hazırla (tablo yoksa sessizce null döner -> hata gizlenir)
+function stmt(sql) {
+  const db = d1();
+  if (!db) return null;
+  try {
+    return db.prepare(sql);
+  } catch {
+    return null;
   }
-  return db;
 }
 
-const KV_COLLECTION = "kv";
-
-// Firestore dokuman ID'si: KV anahtarlari "/" iceremez, ama base64url ile
-// her zaman guvenli (kisa anahtar, 1500 baytlik ID limitinin cok altinda).
-const docId = (key) => Buffer.from(String(key), "utf8").toString("base64url");
-
-// Firestore tek dokuman en fazla 1 MiB kabul eder. DLL (base64) ~21 MB oldugu
-// icin buyuk degerler otomatik olarak parcalara bolunur:
-//   anahtar        -> { __big: 1, chunks: N, size, sha256 }
-//   anahtar::part:i-> { d: "<parca metni>" }
-// get() bunlari birlestirip eski API'yi aynen taklit eder.
-const BIG_MARK = "__big";
-const PART_SEP = "::part:";
-const CHUNK_CHARS = 700_000; // ~700 KB (1 MiB sinirina guvenli pay)
-
-function sha256Hex(text) {
-  return createHash("sha256").update(text, "utf8").digest("hex");
-}
-
-// Firestore "undefined" / "NaN" degerlerini kabul ETMEZ; Netlify Blobs (JSON)
-// ise undefined alanlari sessizce dusururdu. Ayni davranisi taklit ediyoruz,
-// yoksa report.mjs gibi "ban_reason: undefined" yazan handler'lar 500 verir.
+// Netlify'in sessizce düşürdüğü undefined/NaN alanlar Firestore'da 500 verirdi.
+// Aynı davranışı taklit ediyoruz.
 function sanitize(value) {
   if (value === undefined || value === null) return null;
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (typeof value === "bigint") return String(value);
   if (typeof value === "function" || typeof value === "symbol") return null;
   if (Array.isArray(value)) return value.map((v) => (v === undefined ? null : sanitize(v)));
-  if (value instanceof Date) return value;
+  if (value instanceof Date) return value.toISOString();
   if (typeof value === "object") {
     const out = {};
     for (const [k, v] of Object.entries(value)) {
@@ -68,19 +76,32 @@ function sanitize(value) {
   return value;
 }
 
-// Netlify Blobs API'sinin aynisi (Firestore uzerinde).
+async function sha256Hex(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// Netlify Blobs API'sinin aynisi (D1 uzerinde).
 export const store = () => ({
   async get(key, opts = {}) {
+    const s = stmt(`SELECT v FROM ${TABLE} WHERE k = ?`);
+    if (!s) return null;
     try {
-      const snap = await firestore().collection(KV_COLLECTION).doc(docId(key)).get();
-      if (!snap.exists) return null;
-      const data = snap.data() || {};
-      const value = "v" in data ? data.v : null;
+      const row = await s.bind(String(key)).first();
+      if (!row || row.v === null || row.v === undefined) return null;
+      let value;
+      try {
+        value = JSON.parse(row.v);
+      } catch {
+        return null;
+      }
 
       // buyuk deger: parcalari birlestir
       if (value && typeof value === "object" && value[BIG_MARK]) {
         if (opts && opts.type === "metadata") {
-          // meta: degerin icindeki gercek sha256 (orn. DLL'in binary hash'i)
           const meta = value.meta && typeof value.meta === "object" ? value.meta : null;
           return {
             metadata: {
@@ -108,9 +129,42 @@ export const store = () => ({
     }
   },
 
+  // Tek sorguda birden fazla anahtar okur (D1 batch = 1 sorgu).
+  // Worker free planda "invocation basina 50 sorgu" siniri var; listeler
+  // bu yuzden batch ile okunur.
+  async getMany(keys, opts = {}) {
+    const out = new Map();
+    const db = d1();
+    if (!db || !keys || !keys.length) return out;
+    try {
+      const stmts = keys.map((k) =>
+        db.prepare(`SELECT v FROM ${TABLE} WHERE k = ?`).bind(String(k))
+      );
+      const res = await db.batch(stmts);
+      for (let i = 0; i < keys.length; i++) {
+        const row = res[i] && res[i].results && res[i].results[0];
+        if (!row || row.v === null || row.v === undefined) {
+          out.set(String(keys[i]), null);
+          continue;
+        }
+        try {
+          out.set(String(keys[i]), JSON.parse(row.v));
+        } catch {
+          out.set(String(keys[i]), null);
+        }
+      }
+    } catch {
+      /* sessiz */
+    }
+    return out;
+  },
+
   async setJSON(key, value) {
     // Netlify Blobs davranisi: setJSON tamamen DEGISTIRIR (merge yok).
     const text = JSON.stringify(value === undefined ? null : value);
+    const db = d1();
+    if (!db) return;
+
     if (text && text.length > CHUNK_CHARS) {
       // 1) eski parcalari temizle
       await deleteParts(key);
@@ -118,125 +172,142 @@ export const store = () => ({
       const chunks = Math.ceil(text.length / CHUNK_CHARS);
       for (let i = 0; i < chunks; i++) {
         const part = text.slice(i * CHUNK_CHARS, (i + 1) * CHUNK_CHARS);
-        await firestore()
-          .collection(KV_COLLECTION)
-          .doc(docId(`${key}${PART_SEP}${i}`))
-          .set({ k: `${key}${PART_SEP}${i}`, v: { d: part }, u: Date.now() });
+        await db
+          .prepare(`INSERT OR REPLACE INTO ${TABLE} (k, v, u) VALUES (?, ?, ?)`)
+          .bind(`${key}${PART_SEP}${i}`, JSON.stringify({ d: part }), Date.now())
+          .run();
       }
-      // 3) isaretci dokumani
+      // 3) isaretci satiri
       const meta =
         value && typeof value === "object" && !Array.isArray(value) && typeof value.sha256 === "string"
           ? { sha256: value.sha256, size: value.size ?? 0 }
           : null;
-      await firestore().collection(KV_COLLECTION).doc(docId(key)).set({
-        k: String(key),
-        v: {
-          [BIG_MARK]: 1,
-          chunks,
-          size: text.length,
-          sha256: sha256Hex(text),
-          ...(meta ? { meta } : {}),
-        },
-        u: Date.now(),
-      });
+      await db
+        .prepare(`INSERT OR REPLACE INTO ${TABLE} (k, v, u) VALUES (?, ?, ?)`)
+        .bind(
+          String(key),
+          JSON.stringify({
+            [BIG_MARK]: 1,
+            chunks,
+            size: text.length,
+            sha256: await sha256Hex(text),
+            ...(meta ? { meta } : {}),
+          }),
+          Date.now()
+        )
+        .run();
       return;
     }
 
-    await firestore().collection(KV_COLLECTION).doc(docId(key)).set({
-      k: String(key),
-      v: sanitize(value),
-      u: Date.now(),
-    });
+    await db
+      .prepare(`INSERT OR REPLACE INTO ${TABLE} (k, v, u) VALUES (?, ?, ?)`)
+      .bind(String(key), JSON.stringify(sanitize(value)), Date.now())
+      .run();
   },
 
   async delete(key) {
+    const db = d1();
+    if (!db) return;
     try {
-      await firestore().collection(KV_COLLECTION).doc(docId(key)).delete();
+      await db.prepare(`DELETE FROM ${TABLE} WHERE k = ?`).bind(String(key)).run();
       await deleteParts(key);
     } catch {
       /* sessiz */
     }
   },
 
-  async list({ prefix = "", limit = 2000 } = {}) {
-    let query = firestore().collection(KV_COLLECTION);
-    if (prefix) {
-      query = query.where("k", ">=", prefix).where("k", "<=", `${prefix}\uf8ff`);
+  async list({ prefix = "", limit = 2000 } = {}) {    const db = d1();
+    if (!db) return { blobs: [] };
+    try {
+      let sql = `SELECT k FROM ${TABLE}`;
+      const binds = [];
+      if (prefix) {
+        sql += ` WHERE k >= ? AND k <= ?`;
+        binds.push(prefix, `${prefix}\uffff`);
+      }
+      sql += ` ORDER BY k LIMIT ?`;
+      binds.push(Number(limit) || 2000);
+      const res = await db.prepare(sql).bind(...binds).all();
+      const rows = (res && res.results) || [];
+      const blobs = [];
+      for (const row of rows) {
+        const key = row.k;
+        // dahili parca anahtarlari listelenmez
+        if (typeof key !== "string" || key.includes(PART_SEP)) continue;
+        blobs.push({ key });
+      }
+      return { blobs };
+    } catch {
+      return { blobs: [] };
     }
-    const snap = await query.limit(limit).get();
-    const blobs = [];
-    for (const doc of snap.docs) {
-      const key = doc.get("k");
-      // dahili parca anahtarlari listelenmez
-      if (typeof key !== "string" || key.includes(PART_SEP)) continue;
-      blobs.push({ key });
-    }
-    return { blobs };
   },
 });
 
 // buyuk degerin parcalarini birlestirir
 async function readParts(key, chunks) {
   if (!chunks) return null;
+  const db = d1();
+  if (!db) return null;
   const texts = new Array(chunks);
-  const BATCH = 8;
-  for (let start = 0; start < chunks; start += BATCH) {
-    const idx = [];
-    for (let i = start; i < Math.min(start + BATCH, chunks); i++) idx.push(i);
-    const docs = await Promise.all(
-      idx.map((i) => firestore().collection(KV_COLLECTION).doc(docId(`${key}${PART_SEP}${i}`)).get())
-    );
-    for (let j = 0; j < idx.length; j++) {
-      const d = docs[j].data();
-      const part = d && d.v && typeof d.v.d === "string" ? d.v.d : "";
-      if (!part && idx[j] < chunks - 1) return null;
-      texts[idx[j]] = part;
+  try {
+    const res = await db
+      .prepare(`SELECT k, v FROM ${TABLE} WHERE k >= ? AND k <= ? ORDER BY k`)
+      .bind(`${key}${PART_SEP}`, `${key}${PART_SEP}\uffff`)
+      .all();
+    const rows = (res && res.results) || [];
+    const map = new Map();
+    for (const row of rows) {
+      try {
+        const parsed = JSON.parse(row.v);
+        if (parsed && typeof parsed.d === "string") map.set(row.k, parsed.d);
+      } catch {
+        /* bozuk parca */
+      }
     }
+    for (let i = 0; i < chunks; i++) {
+      const part = map.get(`${key}${PART_SEP}${i}`);
+      if (typeof part !== "string") return null;
+      texts[i] = part;
+    }
+  } catch {
+    return null;
   }
   return texts.join("");
 }
 
 async function deleteParts(key) {
+  const db = d1();
+  if (!db) return;
   try {
-    const q = firestore()
-      .collection(KV_COLLECTION)
-      .where("k", ">=", `${key}${PART_SEP}`)
-      .where("k", "<=", `${key}${PART_SEP}\uf8ff`);
-    const snap = await q.get();
-    if (snap.empty) return;
-    const batch = firestore().batch();
-    for (const d of snap.docs) batch.delete(d.ref);
-    await batch.commit();
+    await db
+      .prepare(`DELETE FROM ${TABLE} WHERE k >= ? AND k <= ?`)
+      .bind(`${key}${PART_SEP}`, `${key}${PART_SEP}\uffff`)
+      .run();
   } catch {
     /* temizlik kritik degil */
   }
 }
 
-// ------------------------------------------------------------------ env
-
-export const getEnv = (k, fallback = "") => {
-  if (typeof process !== "undefined" && process.env && process.env[k]) return process.env[k];
-  return fallback;
-};
-
-// ------------------------------------------------------------------ env
-export const ADMIN_KEY = () => getEnv("ADMIN_KEY", "");
-export const SESSION_SECRET = () => getEnv("SITE_SESSION_SECRET", "") || ADMIN_KEY();
-
 // ---------------------------------------------------------------- auth token
 // cookie: base64url(payload).base64url(hmac-sha256(payload, SESSION_SECRET))
 // payload = "exp:<unix>"
 
-const b64url = (bytes) =>
-  btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+const b64url = (bytes) => {
+  let bin = "";
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+};
 
 const unb64url = (s) => {
   const t = s.replace(/-/g, "+").replace(/_/g, "/");
   const pad = "====".slice(t.length % 4 || 4);
-  return Uint8Array.from(atob(t + pad), (c) => c.charCodeAt(0));
+  const bin = atob(t + pad);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
 };
 
 async function hmac(data, key) {
@@ -312,7 +383,6 @@ export const json = (body, extra = {}) =>
       "content-type": "application/json; charset=utf-8",
       // DİKKAT: "private" şart. Firebase Hosting edge'i (ve hosting emülatörü)
       // cache-control içinde "private" yoksa Set-Cookie header'ını SİLer.
-      // Bu olmadan panel girişi (session cookie) tarayıcıya hiç ulaşmaz.
       "cache-control": "private, no-store",
       ...(extra.headers || {}),
     },
@@ -323,11 +393,11 @@ export const unauthorized = () => json({ error: "unauthorized" }, { status: 401 
 
 export function clientIp(req) {
   return (
+    req.headers.get("cf-connecting-ip") ||
     req.headers.get("x-nf-client-connection-ip") ||
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     req.headers.get("x-goog-client-ip") ||
     req.headers.get("client-ip") ||
-    req.headers.get("cf-connecting-ip") ||
     "0.0.0.0"
   );
 }
@@ -408,8 +478,7 @@ export function makeKey({ days = 30, tier = 1, hwid = "" }) {
   b[5] = (ts >>> 8) & 0xff;
   b[6] = ts & 0xff;
   // byte 7..34: random salt + hwid karıştırma
-  const salt = new Uint8Array(28);
-  crypto.getRandomValues(salt);
+  const salt = crypto.getRandomValues(new Uint8Array(28));
   for (let i = 0; i < 28; i++) {
     let v = salt[i];
     if (hwid && i < hwid.length) v ^= hwid.charCodeAt(i) & 0xff;
@@ -462,64 +531,114 @@ export async function kvListKeys(kv, prefix) {
 //   3) ikisi de yoksa şifreleme yapılmaz (loadout kaydedilmez)
 
 let cachedKey = null;
+let cachedKeyPromise = null;
 
-function loadoutKey() {
-  if (cachedKey) return cachedKey;
-
-  const raw = getEnv("LOADOUT_KEY", "");
-  if (raw) {
-    const buf = /^[0-9a-f]{64}$/i.test(raw) ? Buffer.from(raw, "hex") : Buffer.from(raw, "base64");
-    if (buf.length === 32) {
-      cachedKey = buf;
-      return cachedKey;
-    }
+function decodeKeyMaterial(raw) {
+  if (!raw) return null;
+  if (/^[0-9a-f]{64}$/i.test(raw)) {
+    const out = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) out[i] = parseInt(raw.substr(i * 2, 2), 16);
+    return out;
   }
+  try {
+    const bin = atob(raw);
+    if (bin.length !== 32) return null;
+    const out = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  } catch {
+    return null;
+  }
+}
+
+async function deriveKey() {
+  const raw = getEnv("LOADOUT_KEY", "");
+  const direct = decodeKeyMaterial(raw);
+  if (direct) return direct;
 
   const secret = SESSION_SECRET();
   if (!secret) return null;
 
-  cachedKey = Buffer.from(
-    hkdfSync(
-      "sha256",
-      Buffer.from(secret, "utf8"),
-      Buffer.from("swanchanger-loadout-v1", "utf8"),
-      Buffer.from("loadout", "utf8"),
-      32
-    )
+  // HKDF-SHA256(ikm=secret, salt="swanchanger-loadout-v1", info="loadout", 32)
+  const base = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    "HKDF",
+    false,
+    ["deriveBits"]
   );
-  return cachedKey;
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "HKDF",
+      hash: "SHA-256",
+      salt: new TextEncoder().encode("swanchanger-loadout-v1"),
+      info: new TextEncoder().encode("loadout"),
+    },
+    base,
+    256
+  );
+  return new Uint8Array(bits);
 }
 
-export const loadoutEncryptionReady = () => !!loadoutKey();
+async function loadoutKey() {
+  if (cachedKey) return cachedKey;
+  if (!cachedKeyPromise) {
+    cachedKeyPromise = deriveKey().then((k) => {
+      cachedKey = k;
+      return k;
+    });
+  }
+  return cachedKeyPromise;
+}
 
-export function encryptLoadout(obj) {
-  const key = loadoutKey();
+export const loadoutEncryptionReady = async () => !!(await loadoutKey());
+
+export async function encryptLoadout(obj) {
+  const key = await loadoutKey();
   if (!key || !obj) return null;
   try {
-    const iv = randomBytes(12);
-    const cipher = createCipheriv("aes-256-gcm", key, iv);
-    const ct = Buffer.concat([cipher.update(JSON.stringify(obj), "utf8"), cipher.final()]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ck = await crypto.subtle.importKey("raw", key, { name: "AES-GCM" }, false, ["encrypt"]);
+    const sealed = new Uint8Array(
+      await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ck, new TextEncoder().encode(JSON.stringify(obj)))
+    );
+    // WebCrypto: ciphertext||tag -> eski format ile ayni: ct ve tag ayri
+    const ct = sealed.slice(0, sealed.length - 16);
+    const tag = sealed.slice(sealed.length - 16);
     return {
       v: 1,
       alg: "aes-256-gcm",
-      iv: iv.toString("base64"),
-      tag: cipher.getAuthTag().toString("base64"),
-      ct: ct.toString("base64"),
+      iv: btoa(String.fromCharCode(...iv)),
+      tag: btoa(String.fromCharCode(...tag)),
+      ct: btoa(String.fromCharCode(...ct)),
     };
   } catch {
     return null;
   }
 }
 
-export function decryptLoadout(enc) {
+export async function decryptLoadout(enc) {
   if (!enc || !enc.ct || !enc.iv || !enc.tag) return null;
-  const key = loadoutKey();
+  const key = await loadoutKey();
   if (!key) return null;
   try {
-    const decipher = createDecipheriv("aes-256-gcm", key, Buffer.from(enc.iv, "base64"));
-    decipher.setAuthTag(Buffer.from(enc.tag, "base64"));
-    const pt = Buffer.concat([decipher.update(Buffer.from(enc.ct, "base64")), decipher.final()]);
-    return JSON.parse(pt.toString("utf8"));
+    const bin = atob(String(enc.ct));
+    const ct = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) ct[i] = bin.charCodeAt(i);
+    const tagBin = atob(String(enc.tag));
+    const tag = new Uint8Array(tagBin.length);
+    for (let i = 0; i < tagBin.length; i++) tag[i] = tagBin.charCodeAt(i);
+    const ivBin = atob(String(enc.iv));
+    const iv = new Uint8Array(ivBin.length);
+    for (let i = 0; i < ivBin.length; i++) iv[i] = ivBin.charCodeAt(i);
+
+    const combined = new Uint8Array(ct.length + tag.length);
+    combined.set(ct, 0);
+    combined.set(tag, ct.length);
+
+    const ck = await crypto.subtle.importKey("raw", key, { name: "AES-GCM" }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, ck, combined);
+    return JSON.parse(new TextDecoder().decode(plain));
   } catch {
     return null;
   }

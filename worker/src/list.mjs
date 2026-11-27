@@ -14,17 +14,21 @@ export default async (req) => {
   // Eski key:index listesi read-modify-write yarışlarında "index'te var
   // ama kayıt yok" artıkları bırakabiliyordu; index artık okunmuyor.
   const rawKeyList = await kvListKeys(kv, "key:");
-  for (const full of rawKeyList) {
-    const bare = full.slice(4); // "key:" öneki
-    if (!bare || bare === "index") continue;
-    const v = await kvGet(kv, "key:" + bare, null);
+  const bareList = rawKeyList
+    .map((full) => full.slice(4)) // "key:" öneki
+    .filter((bare) => bare && bare !== "index");
+  // Tek batch (D1 sorgu limiti: invocation basina 50 sorgu)
+  const keyMap = await kv.getMany(bareList.map((b) => "key:" + b));
+  for (const bare of bareList) {
+    const v = keyMap.get("key:" + bare);
     if (v) keys.push(v);
   }
 
   // Kullanıcıları index üzerinden topla
   const userIndex = await kvGet(kv, "user:index", []);
+  const userMap = await kv.getMany(userIndex.map((ip) => "user:" + ip));
   for (const ip of userIndex) {
-    const u = await kvGet(kv, "user:" + ip, null);
+    const u = userMap.get("user:" + ip);
     if (u) users.push(u);
   }
 

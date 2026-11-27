@@ -4,7 +4,12 @@ node_modules/
 *.log
 .DS_Store
 
-# Firebase Functions - gizli ayarlar (ADMIN_KEY / LOADOUT_KEY) asla git'e girmez
-functions/.env
-functions/*.local
-functions/.runtimeconfig.json
+# Cloudflare Worker - gizli ayarlar (ADMIN_KEY / SITE_SESSION_SECRET / LOADOUT_KEY)
+# asla git'e girmez
+.dev.vars
+.dev.vars.*
+worker/.dev.vars
+worker/.dev.vars.*
+worker/*.local
+worker/.wrangler/
+worker/.mf/

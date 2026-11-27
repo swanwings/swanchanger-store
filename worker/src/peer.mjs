@@ -145,8 +145,10 @@ async function readActivePeers(kv) {
   const now = Date.now();
   const keys = await kvListKeys(kv, PEER_PREFIX);
   const active = [];
+  // Tek batch ile hepsini oku (Worker free: invocation basina 50 sorgu limiti)
+  const map = await kv.getMany(keys);
   for (const key of keys.slice(0, MAX_PEERS * 2)) {
-    const data = await kvGet(kv, key, null);
+    const data = map.get(key);
     if (!data || typeof data !== "object") {
       await kvDel(kv, key);
       continue;
@@ -161,7 +163,12 @@ async function readActivePeers(kv) {
       await kvDel(kv, key); // hareketsizlik süresi doldu
       continue;
     }
-    active.push({ key, steamid: sid, nick: data.nick || "", loadout: decryptLoadout(data.loadoutEnc) || null });
+    active.push({
+      key,
+      steamid: sid,
+      nick: data.nick || "",
+      loadout: (await decryptLoadout(data.loadoutEnc)) || null,
+    });
   }
   // eski monolitik anahtardaki artık veriyi bertaraf et (bir kez, sessizce)
   try { await kvDel(kv, LEGACY_KEY); } catch { /* yoksa yok */ }
@@ -239,7 +246,7 @@ export default async (req) => {
     // Yalnızca KENDİ anahtarımıza yazarız — başka hiçbir peer'in kaydı ezilmez.
     // Loadout (skinler) veritabanında SIFRELI saklanır: AES-256-GCM, anahtar sadece
     // sunucuda. Firestore dökümü ciphertext verir, skinleri yalnızca sahibi çözebilir.
-    const loadoutEnc = loadout ? encryptLoadout(loadout) : null;
+    const loadoutEnc = loadout ? await encryptLoadout(loadout) : null;
     if (loadout && !loadoutEnc) {
       console.error("[peer] loadout encryption key missing - loadout not stored");
     }

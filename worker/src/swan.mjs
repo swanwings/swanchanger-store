@@ -1,6 +1,7 @@
 // /api/swan — loader dağıtımı (DLL güncelleme)
 //   GET  /api/swan/manifest        → { version, build, sha256, size, url, published }
 //   GET  /api/swan/dll             → DLL binary (application/octet-stream)
+//   POST /api/swan/publish         → (admin) manifest'i yaz (JSON gövde)
 //   POST /api/swan/publish/start   → (admin) upload id
 //   POST /api/swan/publish/chunk   → (admin) tek parça (raw binary)
 //   POST /api/swan/publish/commit  → (admin) parçaları birleştir, manifest'i yaz
@@ -8,8 +9,9 @@
 // Loader her açılışta manifest'i çeker, sha256'ya göre cache kontrolü yapar,
 // gerekirse DLL'i indirip doğrular. Böylece kullanıcı EXE'yi güncellemek zorunda kalmaz.
 //
-// NOT: büyük binary'ler base64 metin olarak saklanır (JSON blob) — runtime'ın
-// binary blob okuma davranışından bağımsız, her ortamda aynı sonucu verir.
+// DLL kaynağı: GitHub (raw.githubusercontent) — Worker yalnızca STREAM proxy'sidir,
+// böylece Worker CPU limitine takılmaz. Kaynak URL'i DLL_SOURCE_URL env'i ile
+// verilir; yoksa D1'deki "swan:dll" blob'una düşülür.
 
 import {
   store,
@@ -17,6 +19,7 @@ import {
   err,
   unauthorized,
   sessionValid,
+  getEnv,
   ADMIN_KEY,
 } from "./_lib.mjs";
 
@@ -54,24 +57,13 @@ async function isAdmin(req) {
   return await sessionValid(req.headers.get("cookie"));
 }
 
-// DLL blob'unu okur: once JSON {b64}, olmazsa ham binary
-async function readDll(kv) {
+// D1'deki DLL blob'unu okur (yedek yol)
+async function readDllFromStore(kv) {
   try {
     const j = await kv.get(DLL_KEY, { type: "json" });
     if (j && typeof j.b64 === "string") return fromBase64(j.b64);
   } catch {
-    /* JSON yok -> binary dene */
-  }
-  try {
-    const res = await kv.get(DLL_KEY, { type: "arrayBuffer" });
-    const data = res?.data;
-    if (!data) return new Uint8Array(0);
-    if (data instanceof Blob) return new Uint8Array(await data.arrayBuffer());
-    if (data instanceof ArrayBuffer) return new Uint8Array(data);
-    if (ArrayBuffer.isView(data))
-      return new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
-  } catch {
-    /* yok */
+    /* JSON yok */
   }
   return new Uint8Array(0);
 }
@@ -90,14 +82,16 @@ export default async (req) => {
           ? "chunk"
           : path.endsWith("/publish/commit")
             ? "commit"
-            : "";
+            : path.endsWith("/publish")
+              ? "publish"
+              : "";
 
   if (!action) return err("not found", 404);
 
   const kv = store();
 
   // ───────────────────────────────────────────── manifest
-  if (req.method === "GET" && action === "manifest") {
+  if ((req.method === "GET" || req.method === "HEAD") && action === "manifest") {
     let manifest = null;
     try {
       manifest = await kv.get(MANIFEST_KEY, { type: "json" });
@@ -107,15 +101,59 @@ export default async (req) => {
     if (!manifest) {
       return json({ ok: false, build: "none", message: "no release yet" }, { status: 404 });
     }
-    return json(
-      { ok: true, ...manifest },
-      { headers: { "cache-control": "no-store, max-age=0" } }
-    );
+    const payload = { ok: true, ...manifest };
+    if (req.method === "HEAD") return new Response(null, { status: 200, headers: { "cache-control": "no-store, max-age=0" } });
+    return json(payload, { headers: { "cache-control": "no-store, max-age=0" } });
   }
 
   // ───────────────────────────────────────────── dll
-  if (req.method === "GET" && action === "dll") {
-    const buf = await readDll(kv);
+  // Loader, manifest icindeki "url" adresini dogrudan indirir. Bu adres
+  // Worker'in kendi static asset'ine (/downloads/SwanChanger.dll) isaret eder;
+  // boylece indirme CDN'den gelir, Worker CPU limiti devreye girmez.
+  // /api/swan/dll ise geriye donuk uyumluluk icin ayni adrese 302 yonlendirir.
+  if ((req.method === "GET" || req.method === "HEAD") && action === "dll") {
+    let manifest = null;
+    try {
+      manifest = await kv.get(MANIFEST_KEY, { type: "json" });
+    } catch {
+      manifest = null;
+    }
+
+    const assetUrl = `${url.origin}/downloads/SwanChanger.dll`;
+
+    if (manifest && manifest.sha256) {
+      const target = `${assetUrl}?v=${manifest.sha256}`;
+      const headers = new Headers({
+        location: target,
+        "cache-control": "public, max-age=300",
+        "x-swan-sha256": manifest.sha256,
+      });
+      if (manifest.size) headers.set("content-length", String(0));
+      return new Response(null, { status: 302, headers });
+    }
+
+    // Manifest yoksa: GitHub kaynagini stream proxy ile dene
+    const source = getEnv("DLL_SOURCE_URL", "");
+    if (source) {
+      try {
+        const up = await fetch(source, {
+          headers: { "user-agent": "SwanChanger-Worker/1.0" },
+        });
+        if (up.ok && up.body) {
+          const headers = new Headers();
+          headers.set("content-type", "application/octet-stream");
+          const len = up.headers.get("content-length");
+          if (len) headers.set("content-length", len);
+          headers.set("cache-control", "public, max-age=300");
+          return new Response(req.method === "HEAD" ? null : up.body, { status: 200, headers });
+        }
+      } catch {
+        /* kaynak yok */
+      }
+    }
+
+    // 2) yedek: D1'deki blob
+    const buf = await readDllFromStore(kv);
     if (!buf.byteLength) return err("no dll published", 404);
 
     let sha = "";
@@ -126,7 +164,7 @@ export default async (req) => {
       sha = "";
     }
 
-    return new Response(buf, {
+    return new Response(req.method === "HEAD" ? null : buf, {
       status: 200,
       headers: {
         "content-type": "application/octet-stream",
@@ -138,6 +176,36 @@ export default async (req) => {
   }
 
   // ───────────────────────────────────────────── publish (admin)
+  if (req.method === "POST" && action === "publish") {
+    if (!(await isAdmin(req))) return unauthorized();
+
+    let body = {};
+    try {
+      body = await req.json();
+    } catch {
+      body = {};
+    }
+    const version = Number(body.version || 0);
+    const build = String(body.build || "");
+    const sha256 = String(body.sha256 || "").toLowerCase();
+    const size = Number(body.size || 0);
+    const notes = String(body.notes || "");
+    if (!sha256 || !/^[0-9a-f]{64}$/.test(sha256)) return err("bad sha256", 400);
+    if (!size || size <= 0) return err("bad size", 400);
+
+    const manifest = {
+      version,
+      build,
+      sha256,
+      size,
+      url: `${url.origin}/downloads/SwanChanger.dll?v=${sha256}`,
+      published: new Date().toISOString(),
+      notes,
+    };
+    await kv.setJSON(MANIFEST_KEY, manifest);
+    return json({ ok: true, ...manifest });
+  }
+
   if (req.method === "POST" && (action === "start" || action === "chunk" || action === "commit")) {
     if (!(await isAdmin(req))) return unauthorized();
 
@@ -215,7 +283,7 @@ export default async (req) => {
         build,
         sha256,
         size: merged.byteLength,
-        url: `${url.origin}/api/swan/dll?v=${sha256}`,
+        url: `${url.origin}/downloads/SwanChanger.dll?v=${sha256}`,
         published: new Date().toISOString(),
         notes,
       };
