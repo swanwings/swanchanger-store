@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Firestore sadece sunucudan (Cloud Functions -> Admin SDK) erisilebilir.
+// Tarayici/istemci tarafindan HICbir okuma veya yazma yok: skinler (loadout)
+// ayrica AES-256-GCM ile sifrelenerek saklandigi icin, veritabani dökümü bile
+// ciphertext gorur. Sifreli veriyi yalnizca sahibi (panel) çözebilir.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

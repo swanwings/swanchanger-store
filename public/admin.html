@@ -3,230 +3,300 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SwanChanger — Admin Key Generator</title>
-<link rel="icon" type="image/png" href="/assets/shots/logo.png">
+<meta name="robots" content="noindex, nofollow">
+<title>SwanChanger — Panel</title>
 <style>
-  :root {
-    --bg: #07060c; --panel: #100d1b; --line: #241c38; --line2: #332752;
-    --txt: #f3f0ff; --dim: #9b93b5; --acc: #a78bfa; --acc2: #7c3aed;
-    --neon: #d8ff00; --ok: #35d07f; --bad: #ff5f6d;
+  :root{
+    --bg:#07080c; --panel:#0e1016; --panel2:#12141d; --line:#1e2230;
+    --txt:#e8eaf2; --dim:#7d8497; --acc:#7c5cff; --acc2:#22d3ee;
+    --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b;
   }
-  * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-  body {
-    margin: 0; background: var(--bg); color: var(--txt);
-    font: 15px/1.6 "Segoe UI", Inter, system-ui, sans-serif;
-    display: flex; align-items: center; justify-content: center; min-height: 100vh;
-    padding: 24px;
-  }
-  .admin-box {
-    width: min(600px, 100%); background: var(--panel); border: 1px solid var(--line2);
-    border-radius: 20px; padding: 36px; box-shadow: 0 20px 60px rgba(0,0,0,.7);
-    position: relative;
-  }
-  .brand-head {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-    padding-bottom: 18px; border-bottom: 1px solid var(--line);
-  }
-  .brand-head img { width: 38px; height: 38px; }
-  .brand-head h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: .06em; }
-  .brand-head span { font-size: 11.5px; color: var(--neon); font-weight: 700; display: block; }
-  
-  .form-group { margin-bottom: 18px; }
-  label { display: block; font-size: 13px; font-weight: 700; color: var(--dim); margin-bottom: 6px; }
-  select, input {
-    width: 100%; padding: 12px 14px; background: rgba(255,255,255,.05);
-    border: 1px solid var(--line2); border-radius: 10px; color: #fff; font: inherit;
-    font-size: 14px; outline: none; transition: border-color .2s;
-  }
-  select:focus, input:focus { border-color: var(--acc); }
-  
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  
-  .btn-gen {
-    width: 100%; padding: 14px; background: var(--neon); color: #000;
-    font-size: 15px; font-weight: 800; border: none; border-radius: 12px;
-    cursor: pointer; transition: all .2s; margin-top: 10px;
-    box-shadow: 0 6px 20px rgba(216,255,0,.35);
-  }
-  .btn-gen:hover { background: #c4eb00; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(216,255,0,.5); }
-  
-  .output-box {
-    margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);
-    display: none;
-  }
-  .output-box.show { display: block; }
-  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .output-title { font-size: 13px; font-weight: 700; color: var(--ok); }
-  
-  .btn-copy {
-    padding: 6px 14px; border-radius: 8px; background: rgba(124,58,237,.2);
-    border: 1px solid var(--acc); color: #fff; font-size: 12.5px; font-weight: 700;
-    cursor: pointer; transition: all .2s;
-  }
-  .btn-copy:hover { background: var(--acc2); }
-
-  textarea {
-    width: 100%; height: 160px; background: #07060c; border: 1px solid var(--line);
-    border-radius: 10px; padding: 12px; color: #a78bfa; font-family: monospace;
-    font-size: 13px; resize: none; -webkit-user-select: text; user-select: text;
-  }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
-    background: #1e1336; border: 1px solid var(--ok); color: var(--ok);
-    padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;
-    opacity: 0; transition: all .25s; pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font:14px/1.5 ui-monospace,"Cascadia Mono",Consolas,monospace;min-height:100vh}
+  a{color:var(--acc2)}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 80px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .logo{font-size:20px;font-weight:800;letter-spacing:.5px}
+  .logo b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--dim);font-size:12px}
+  .spacer{flex:1}
+  button,.btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;transition:.15s}
+  button:hover,.btn:hover{border-color:var(--acc);color:#fff}
+  button.primary{background:linear-gradient(90deg,var(--acc),#5b3fd6);border:none;color:#fff}
+  button.danger{color:#fca5a5;border-color:#3b1d22}
+  button.danger:hover{border-color:var(--bad)}
+  input,select{background:#0a0c12;border:1px solid var(--line);color:var(--txt);padding:8px 10px;border-radius:8px;font:inherit;font-size:13px}
+  input:focus,select:focus{outline:none;border-color:var(--acc)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card .v{font-size:26px;font-weight:800;margin-top:4px}
+  .card .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .panel h2 .spacer{flex:1}
+  .tblwrap{overflow:auto;max-height:460px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{position:sticky;top:0;background:var(--panel2);color:var(--dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.6px;z-index:2}
+  tr:hover td{background:#141722}
+  .mono{font-family:inherit;letter-spacing:.3px}
+  .pill{padding:2px 8px;border-radius:20px;font-size:11px;border:1px solid}
+  .ok{color:#86efac;border-color:#14532d;background:#052e16}
+  .revoked{color:#fca5a5;border-color:#7f1d1d;background:#2e0808}
+  .expired{color:#fcd34d;border-color:#78350f;background:#2a1a05}
+  .banned{color:#fff;border-color:#b91c1c;background:#7f1d1d}
+  .muted{color:var(--dim)}
+  .ctag{display:inline-block;min-width:20px;text-align:center;font-size:10px;font-weight:700;border:1px solid var(--line);border-radius:5px;padding:1px 4px;margin-right:3px;color:var(--dim)}
+  .ctag.ok{color:#86efac;border-color:#14532d;background:#052e16}
+  .chkline{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--txt);text-transform:none;letter-spacing:0;padding-top:12px}
+  .ipbtn{background:none;border:none;color:var(--acc2);cursor:pointer;font:inherit;padding:0;text-decoration:underline dotted}
+  .toolbar{display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+  .toolbar input{flex:1;min-width:160px}
+  .newbar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center;background:#0b0d14}
+  .newbar label{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+  .newbar .f{display:flex;flex-direction:column;gap:4px}
+  .out{padding:12px 16px;max-height:180px;overflow:auto;font-size:12px;color:#a7f3d0;white-space:pre-wrap;word-break:break-all;display:none;background:#08110d;border-top:1px solid var(--line)}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--panel2);border:1px solid var(--acc);padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;transform:translateY(10px);z-index:99}
+  .toast.show{opacity:1;transform:none}
+  /* login */
+  #login{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
+  .lbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:32px;width:360px;text-align:center}
+  .lbox h1{font-size:22px;margin-bottom:6px}
+  .lbox p{color:var(--dim);font-size:12px;margin-bottom:20px}
+  .lbox input{width:100%;margin-bottom:12px;text-align:center}
+  .lbox button{width:100%}
+  .err{color:#fca5a5;font-size:12px;height:16px}
+  .hidden{display:none!important}
 </style>
 </head>
 <body>
 
-<div class="admin-box">
-  <div class="brand-head">
-    <img src="/assets/shots/logo.png" alt="SwanChanger Logo">
-    <div>
-      <h2>SWANCHANGER ADMIN</h2>
-      <span>LİSANS ANAHTARI ÜRETİM PANELİ</span>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label>Lisans Süresi</label>
-    <select id="durationSelect">
-      <option value="7">7 Günlük (Haftalık Plan)</option>
-      <option value="30" selected>30 Günlük (Aylık Plan)</option>
-      <option value="90">90 Günlük (3 Aylık Paket)</option>
-      <option value="365">365 Günlük (1 Yıllık Paket)</option>
-      <option value="0">Sınırsız (Lifetime / VIP)</option>
-    </select>
-  </div>
-
-  <div class="grid-2">
-    <div class="form-group">
-      <label>Üretilecek Adet</label>
-      <input type="number" id="countInput" value="1" min="1" max="100">
-    </div>
-    <div class="form-group">
-      <label>Tier / Yetki Seviyesi</label>
-      <select id="tierSelect">
-        <option value="1" selected>Tier 1 (Standart CS2)</option>
-        <option value="2">Tier 2 (Premium VIP)</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label>Özel HWID Kilidi (İsteğe bağlı — Boşsa her cihazda çalışır)</label>
-    <input type="text" id="hwidInput" placeholder="Örn: 419184FC97CBE662D94F9E7E5A28E517">
-  </div>
-
-  <button class="btn-gen" id="genBtn" type="button">🔑 Anahtarları Üret</button>
-
-  <div class="output-box" id="outputBox">
-    <div class="output-header">
-      <span class="output-title" id="outCountMsg">✓ 1 Adet Anahtar Üretildi</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn-copy" id="copyBtn" type="button">📋 Panoya Kopyala</button>
-        <button class="btn-copy" id="dlBtn" type="button">💾 İndir (.txt)</button>
-      </div>
-    </div>
-    <textarea id="keysTextarea" readonly></textarea>
+<div id="login">
+  <div class="lbox">
+    <h1>🦢 <b>Swan</b>Changer</h1>
+    <p>panel erişimi — sadece sen</p>
+    <input id="pw" type="password" placeholder="şifre" autocomplete="current-password">
+    <div class="err" id="lerr"></div>
+    <button class="primary" onclick="login()">giriş</button>
   </div>
 </div>
 
-<div class="toast" id="toast">Panoya kopyalandı!</div>
+<div id="app" class="hidden">
+<div class="wrap">
+  <header>
+    <div class="logo">🦢 <b>Swan</b>Changer <span class="tag">// panel</span></div>
+    <div class="spacer"></div>
+    <span class="tag" id="clock"></span>
+    <a class="btn" href="https://swanchanger.web.app/" target="_blank" rel="noopener">mağaza</a>
+    <button onclick="load()">↻ yenile</button>
+    <button class="danger" onclick="logout()">çıkış</button>
+  </header>
+
+  <div class="cards">
+    <div class="card"><div class="l">toplam enjeksiyon</div><div class="v" id="c_reports">0</div></div>
+    <div class="card"><div class="l">aktif kullanıcı</div><div class="v" id="c_users">0</div></div>
+    <div class="card"><div class="l">farklı hwid</div><div class="v" id="c_hwid">0</div></div>
+    <div class="card"><div class="l">aktif anahtar</div><div class="v" id="c_keys">0</div></div>
+    <div class="card"><div class="l">son enjeksiyon</div><div class="v" id="c_last" style="font-size:16px">—</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>kullanıcılar <span class="spacer"></span>
+        <input id="uq" placeholder="ip / hwid / nick ara" oninput="renderUsers()" style="padding:5px 8px">
+      </h2>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>durum</th><th>ip</th><th>ülke</th><th>hwid</th><th>nick</th><th>anahtar</th><th>kez</th><th>son</th><th></th></tr></thead>
+          <tbody id="ubody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>anahtarlar</h2>
+      <div class="newbar">
+        <div class="f"><label>adet</label><input id="n_count" type="number" value="1" min="1" max="100" style="width:60px"></div>
+        <div class="f"><label>süre (gün)</label><input id="n_days" type="number" value="30" min="1" style="width:75px"></div>
+        <div class="f"><label>tier</label>
+          <select id="n_tier" style="width:95px">
+            <option value="0">trial</option>
+            <option value="1" selected>1 ay</option>
+            <option value="2">sınırsız</option>
+            <option value="3">ömürlük</option>
+          </select>
+        </div>
+        <div class="f"><label>özel hwid (opsiyonel)</label><input id="n_hwid" placeholder="HWID yapıştır veya boş bırak" style="width:160px"></div>
+        <div class="f"><label>not</label><input id="n_note" placeholder="müşteri adı" style="width:120px"></div>
+        <div class="f"><label>topluluk</label><label class="chkline" title="Steam grubu + tag ve Discord üyeliği zorunlu olsun"><input type="checkbox" id="n_community" checked> zorunlu</label></div>
+        <div class="f"><label>&nbsp;</label><button class="primary" onclick="createKeys()">üret</button></div>
+      </div>
+      <pre class="out" id="kout"></pre>
+      <div class="toolbar">
+        <input id="kq" placeholder="anahtar ara" oninput="renderKeys()">
+      </div>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>durum</th><th>anahtar</th><th>bitiş</th><th>not</th><th>hwid</th><th>topluluk</th><th></th></tr></thead>
+          <tbody id="kbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-function generateSwanKey(days, tier, hwid) {
-  const b = new Uint8Array(36);
-  b[0] = 0x53; // 'S' magic byte
-  b[1] = tier & 0xFF;
-  b[2] = 0; // padding
+let DATA={keys:[],users:[],summary:{}};
 
-  const ts = (days === 0) ? 0 : (Math.floor(Date.now() / 1000) + days * 86400);
-  b[3] = (ts >>> 24) & 0xFF;
-  b[4] = (ts >>> 16) & 0xFF;
-  b[5] = (ts >>> 8) & 0xFF;
-  b[6] = ts & 0xFF;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+const short=(s,n=10)=>s?esc(String(s).slice(0,n))+(String(s).length>n?"…":""):"-";
+const when=ts=>ts?new Date(ts).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"-";
+const copy=t=>{navigator.clipboard&&navigator.clipboard.writeText(t);toast("kopyalandı")};
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1800)}
 
-  const salt = new Uint8Array(28);
-  crypto.getRandomValues(salt);
-  for (let i = 0; i < 28; i++) {
-    let v = salt[i];
-    if (hwid && i < hwid.length) {
-      v ^= hwid.charCodeAt(i) & 0xFF;
-    }
-    b[7 + i] = v;
-  }
-
-  // Checksum = XOR(b[1]..b[34])
-  let chk = 0;
-  for (let i = 1; i < 35; i++) {
-    chk ^= b[i];
-  }
-  b[35] = chk & 0xFF;
-
-  // Convert to hex
-  let hex = "";
-  for (let i = 0; i < 36; i++) {
-    hex += b[i].toString(16).padStart(2, "0").toUpperCase();
-  }
-
-  // Format: 9 groups of 8 (or chunks of 4) -> XXXX-XXXX-...
-  return hex.match(/.{1,4}/g).join("-");
+async function api(path,opt){
+  const r=await fetch(path,Object.assign({headers:{"content-type":"application/json"}},opt));
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){showLogin();throw new Error("401")}
+  if(!r.ok)throw new Error(j.error||r.status);
+  return j;
 }
 
-const genBtn = document.getElementById("genBtn");
-const durationSelect = document.getElementById("durationSelect");
-const countInput = document.getElementById("countInput");
-const tierSelect = document.getElementById("tierSelect");
-const hwidInput = document.getElementById("hwidInput");
-const outputBox = document.getElementById("outputBox");
-const keysTextarea = document.getElementById("keysTextarea");
-const outCountMsg = document.getElementById("outCountMsg");
-const copyBtn = document.getElementById("copyBtn");
-const dlBtn = document.getElementById("dlBtn");
-const toast = document.getElementById("toast");
+function showLogin(){$("app").classList.add("hidden");$("login").style.display="flex"}
+function showApp(){$("login").style.display="none";$("app").classList.remove("hidden")}
 
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+async function login(){
+  try{
+    await api("/api/auth",{method:"POST",body:JSON.stringify({password:$("pw").value})});
+    $("pw").value="";$("lerr").textContent="";showApp();load();
+  }catch(e){$("lerr").textContent="şifre yanlış"}
+}
+async function logout(){try{await fetch("/api/auth",{method:"DELETE"})}catch{}showLogin()}
+$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+
+async function load(){
+  try{
+    const chk=await fetch("/api/auth/check").then(r=>r.json());
+    if(!chk.ok){showLogin();return}
+    showApp();
+    DATA=await api("/api/list");
+    render();
+  }catch(e){showLogin()}
 }
 
-genBtn.addEventListener("click", () => {
-  const days = parseInt(durationSelect.value, 10);
-  const count = Math.max(1, Math.min(100, parseInt(countInput.value, 10) || 1));
-  const tier = parseInt(tierSelect.value, 10);
-  const hwid = hwidInput.value.trim();
+function pill(status){
+  const m={active:["ok","aktif"],revoked:["revoked","iptal"],expired:["expired","süresi dolmuş"],banned:["banned","banlı"]};
+  const [c,l]=m[status]||["muted",status||"?"];
+  return `<span class="pill ${c}">${l}</span>`;
+}
+const expired=r=>r.expiry&&r.expiry<Date.now();
+const kstate=r=>r.status==="revoked"?"revoked":expired(r)?"expired":"active";
 
-  const keys = [];
-  for (let i = 0; i < count; i++) {
-    keys.push(generateSwanKey(days, tier, hwid));
+function render(){
+  const u=DATA.users||[],k=DATA.keys||[],s=DATA.summary||{};
+  $("c_reports").textContent=s.reports||0;
+  $("c_users").textContent=s.users||u.length;
+  $("c_hwid").textContent=s.hwids||0;
+  $("c_keys").textContent=s.keys_active||0;
+  $("c_last").textContent=(u[0]&&u[0].last)?when(u[0].last):"—";
+  renderUsers();renderKeys();
+}
+
+function renderUsers(){
+  const q=($("uq").value||"").toLowerCase();
+  const rows=(DATA.users||[]).filter(r=>!q||[r.ip,r.hwid,r.nick,r.key].join(" ").toLowerCase().includes(q));
+  $("ubody").innerHTML=rows.map(r=>`<tr>
+    <td>${pill(r.status==="banned"?"banned":"active")}</td>
+    <td><button class="ipbtn mono" onclick="copy('${esc(r.ip)}')">${esc(r.ip)}</button></td>
+    <td class="muted">${esc(r.country||"-")}</td>
+    <td><button class="ipbtn mono" title="${esc(r.hwid)}" onclick="copy('${esc(r.hwid)}')">${short(r.hwid,14)}</button></td>
+    <td>${short(r.nick,16)}</td>
+    <td class="mono">${short(r.key,12)}</td>
+    <td class="muted">${r.hits||1}</td>
+    <td class="muted">${when(r.last)}</td>
+    <td style="text-align:right">
+      <button class="btn primary" style="padding:4px 8px;font-size:11px" onclick="quickKey('${esc(r.hwid)}','${esc(r.nick)}')">Key Üret</button>
+      <button class="danger" style="padding:4px 8px;font-size:11px" onclick="ban('${esc(r.ip)}',${r.status==="banned"?0:1})">${r.status==="banned"?"unban":"ban"}</button>
+      <button class="danger" style="padding:4px 8px;font-size:11px" onclick="delUser('${esc(r.ip)}')">sil</button>
+    </td></tr>`).join("")||`<tr><td colspan="9" class="muted">henüz veri yok — dll enjekte edildiğinde buraya düşer</td></tr>`;
+}
+
+function renderKeys(){
+  const q=($("kq").value||"").toLowerCase();
+  const rows=(DATA.keys||[]).filter(r=>!q||[r.key,r.note,r.bound_hwid].join(" ").toLowerCase().includes(q));
+  $("kbody").innerHTML=rows.map(r=>{
+    const st=kstate(r);
+    const c=r.community||{};
+    const cm=r.community_required
+      ? `<span class="ctag ${c.steam_group?"ok":""}">S</span><span class="ctag ${c.steam_tag?"ok":""}">T</span><span class="ctag ${c.discord_guild?"ok":""}">D</span>`
+      : `<span class="muted">—</span>`;
+    return `<tr>
+      <td>${pill(st)}</td>
+      <td><button class="ipbtn mono" onclick="copy('${esc(r.key)}')">${esc(r.key)}</button></td>
+      <td class="muted">${when(r.expiry)}</td>
+      <td class="muted">${short(r.note,18)}</td>
+      <td class="mono">${r.bound_hwid?short(r.bound_hwid,12):'<span class="muted">herkes</span>'}</td>
+      <td>${cm}</td>
+      <td style="text-align:right">
+        <button onclick="toggleKey('${esc(r.bare)}','${st==="revoked"?"active":"revoked"}')">${st==="revoked"?"geri al":"iptal"}</button>
+        <button class="danger" onclick="delKey('${esc(r.bare)}')">sil</button>
+      </td></tr>`}).join("")||`<tr><td colspan="7" class="muted">anahtar yok — yukarıdan üret</td></tr>`;
+}
+
+function quickKey(hwid, nick){
+  if(hwid && hwid !== "-"){
+    $("n_hwid").value = hwid;
+    $("n_note").value = (nick && nick !== "-") ? nick + " özel" : "özel lisans";
+    toast("HWID forma aktarıldı, 'üret'e basabilirsiniz");
+    $("n_hwid").scrollIntoView({ behavior: "smooth", block: "center" });
+    $("n_hwid").focus();
   }
+}
 
-  keysTextarea.value = keys.join("\n");
-  outCountMsg.textContent = `✓ ${count} Adet Geçerli Anahtar Üretildi (${days === 0 ? "Sınırsız" : days + " Gün"})`;
-  outputBox.classList.add("show");
-  showToast(`${count} anahtar başarıyla üretildi!`);
-});
+async function createKeys(){
+  try{
+    const r=await api("/api/keys",{method:"POST",body:JSON.stringify({
+      count:+$("n_count").value||1,
+      days:+$("n_days").value||30,
+      tier:+$("n_tier").value||1,
+      hwid:($("n_hwid")?.value||"").trim(),
+      note:($("n_note")?.value||"").trim(),
+      community_required:($("n_community")?.checked!==false)})});
+    const out=$("kout");out.style.display="block";
+    // r.keys artık obje array — .key alanını çek
+    const keyStrings = r.keys.map(k => typeof k === "string" ? k : k.key);
+    out.textContent=keyStrings.join("\n");
+    copy(keyStrings[0]);
+    toast(keyStrings.length+" anahtar üretildi ve kopyalandı!");
+    load();
+  }catch(e){toast("hata: "+e.message)}
+}
+async function toggleKey(bare,status){
+  try{await api("/api/keys",{method:"PUT",body:JSON.stringify({bare,status})});load()}
+  catch(e){toast("hata: "+e.message)}
+}
+async function delKey(bare){
+  if(!confirm("anahtar kalıcı olarak silinsin mi?"))return;
+  try{await api("/api/keys?bare="+bare,{method:"DELETE"});load()}catch(e){toast("hata: "+e.message)}
+}
+async function ban(ip,on){
+  try{await api("/api/users",{method:"PUT",body:JSON.stringify({ip,status:on?"banned":"active"})});load()}
+  catch(e){toast("hata: "+e.message)}
+}
+async function delUser(ip){
+  if(!confirm(ip+" kalıcı olarak silinsin mi?"))return;
+  try{await api("/api/users?ip="+encodeURIComponent(ip),{method:"DELETE"});load()}catch(e){toast("hata: "+e.message)}
+}
 
-copyBtn.addEventListener("click", () => {
-  if (!keysTextarea.value) return;
-  navigator.clipboard.writeText(keysTextarea.value).then(() => {
-    showToast("Anahtarlar panoya kopyalandı!");
-  });
-});
-
-dlBtn.addEventListener("click", () => {
-  if (!keysTextarea.value) return;
-  const blob = new Blob([keysTextarea.value], { type: "text/plain;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `swanchanger_keys_${Date.now()}.txt`;
-  a.click();
-});
+setInterval(()=>{$("clock").textContent=new Date().toLocaleTimeString("tr-TR")},1000);
+setInterval(()=>{if(!$("app").classList.contains("hidden"))load()},30000);
+load();
 </script>
 </body>
 </html>

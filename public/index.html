@@ -1499,7 +1499,7 @@ $("#queryBtn").addEventListener("click", async () => {
   res.classList.add("show");
   res.innerHTML = '<span class="muted">Sorgulanıyor…</span>';
   try {
-    const r = await fetch("https://nihujohiuhjiuoj.netlify.app/api/report?k=" + encodeURIComponent(key) + "&h=" + encodeURIComponent(hwid || "00000000000000000000000000000000"));
+    const r = await fetch("/api/report?k=" + encodeURIComponent(key) + "&h=" + encodeURIComponent(hwid || "00000000000000000000000000000000"));
     const j = await r.json();
     if (!j || !j.s) {
       res.innerHTML = '<b style="color:var(--bad)">✕ Sorgulanamadı.</b>';

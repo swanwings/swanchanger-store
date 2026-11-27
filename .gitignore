@@ -3,3 +3,8 @@
 node_modules/
 *.log
 .DS_Store
+
+# Firebase Functions - gizli ayarlar (ADMIN_KEY / LOADOUT_KEY) asla git'e girmez
+functions/.env
+functions/*.local
+functions/.runtimeconfig.json
