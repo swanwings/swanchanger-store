@@ -85,7 +85,7 @@ export default async (req) => {
       return json(
         {
           error: "discord_not_configured",
-          hint: "Firebase env: DISCORD_CLIENT_ID + DISCORD_CLIENT_SECRET gerekli",
+          hint: "Worker secret: DISCORD_CLIENT_ID + DISCORD_CLIENT_SECRET gerekli",
         },
         { status: 503 }
       );
