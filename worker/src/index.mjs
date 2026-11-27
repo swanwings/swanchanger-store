@@ -91,7 +91,26 @@ export default {
     }
 
     // statik dosyalar (mağaza, panel, assets)
-    if (env.ASSETS) return env.ASSETS.fetch(request);
+    if (env.ASSETS) {
+      const res = await env.ASSETS.fetch(request);
+      const headers = new Headers(res.headers);
+
+      // Panel güvenlik başlıkları (Firebase Hosting'de de aynı ayar vardı)
+      if (pathname === "/admin.html" || pathname === "/admin" || pathname.startsWith("/admin/")) {
+        headers.set("X-Robots-Tag", "noindex, nofollow");
+        headers.set("X-Frame-Options", "DENY");
+        headers.set("Referrer-Policy", "no-referrer");
+        headers.set("Cache-Control", "no-cache, must-revalidate");
+      }
+      if (pathname === "/" || pathname === "/index.html") {
+        headers.set("Cache-Control", "no-cache, must-revalidate");
+      }
+      return new Response(res.body, {
+        status: res.status,
+        statusText: res.statusText,
+        headers,
+      });
+    }
 
     return new Response("not found", { status: 404 });
   },
