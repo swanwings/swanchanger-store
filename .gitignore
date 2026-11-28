@@ -16,3 +16,6 @@ worker/.mf/
 
 # Panel kaynagi private GitHub reposunda (public depoda tutulmaz)
 panel-src/
+
+# gecici yardimci scriptler (repo disinda tut)
+*.py
