@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta name="referrer" content="no-referrer">
+<title>SwanChanger — Panel</title>
+<style>
+  :root{--bg:#070b0a;--panel:#0e1614;--line:#1d2b27;--acc:#5eead4;--dim:#7f9a92}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:radial-gradient(1200px 600px at 50% -10%,#10201c,#070b0a 60%);
+       color:#e6fff8;font:15px/1.6 "Segoe UI",system-ui,-apple-system,sans-serif;padding:24px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:38px 34px;
+       max-width:460px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:.5px}
+  h1 b{color:var(--acc)}
+  p{margin:8px 0;color:var(--dim);font-size:13px}
+  .btn{display:inline-block;margin:20px 0 14px;padding:12px 26px;border-radius:12px;
+       background:linear-gradient(180deg,#0f2b25,#0a1a17);border:1px solid #2b4a41;color:var(--acc);
+       text-decoration:none;font-weight:600;letter-spacing:.4px;transition:.2s}
+  .btn:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:0 8px 24px rgba(94,234,212,.12)}
+  .lock{margin-top:14px;font-size:11.5px;color:#5c7a72;border-top:1px solid var(--line);padding-top:12px}
+  code{background:#08110d;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:#a7f3d0;font-size:12px}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>🦢 <b>Swan</b>Changer</h1>
+    <p>panel — özel GitHub reposu üzerinden çalışıyor</p>
+    <a class="btn" href="https://swanchanger.web.app/admin.html">Panele Git</a>
+    <div class="lock">
+      🔒 erişim <b>isim + şifre</b> ile korunuyor · panel kodu herkese açık depoda <b>değil</b><br>
+      skinler (loadout) <code>AES-256-GCM</code> şifreli olarak özel depoda saklanıyor
+    </div>
+  </div>
+<script>
+  // panel ayni sekmede acilsin
+  location.replace("https://swanchanger.web.app/admin.html" + location.hash);
+</script>
+</body>
+</html>
