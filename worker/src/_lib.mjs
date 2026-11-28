@@ -36,6 +36,46 @@ export const getEnv = (k, fallback = "") => {
 export const ADMIN_KEY = () => getEnv("ADMIN_KEY", "");
 export const SESSION_SECRET = () => getEnv("SITE_SESSION_SECRET", "") || ADMIN_KEY();
 
+// Panel kullanici adi (secret olarak tutulur, public depoda YAZILMAZ).
+// Bos ise geriye donuk davranis: sadece sifre sorulur.
+export const ADMIN_USER = () => getEnv("ADMIN_USER", "");
+
+// Panelin calisabilecegi kaynaklar (CORS + CSRF). GitHub Pages varsayilan.
+export const PANEL_ORIGINS = () => {
+  const raw = getEnv("PANEL_ORIGINS", "");
+  const list = String(raw || "")
+    .split(",")
+    .map((s) => s.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+  const def = ["https://swanwings.github.io"];
+  for (const d of def) if (!list.includes(d)) list.push(d);
+  return list;
+};
+
+// Istegin Origin'i panel icin izinli mi?
+export function originAllowed(req) {
+  const origin = (req.headers.get("origin") || "").replace(/\/+$/, "");
+  if (!origin) return true; // CLI / sunucudan gelen istek
+  const self = new URL(req.url).origin.replace(/\/+$/, "");
+  if (origin === self) return true;
+  return PANEL_ORIGINS().includes(origin);
+}
+
+// CSRF korumasi: durum degistiren (POST/PUT/DELETE) isteklerde ya
+// x-swan-admin basligi (CLI) ya da izinli bir Origin gerekir.
+// Origin yoksa istek tarayici disi sayilir; bu durumda JSON content-type
+// zorunlu olur (cross-site form POST application/json gonderemez ->
+// tarayici preflight'a takilir, preflight sadece izinli origin'e gecer).
+export function csrfOk(req) {
+  const key = ADMIN_KEY();
+  const h = req.headers.get("x-swan-admin");
+  if (key && h && h === key) return true; // CLI / script (kimlik header'i)
+  const origin = req.headers.get("origin");
+  if (origin) return originAllowed(req);
+  const ct = (req.headers.get("content-type") || "").toLowerCase();
+  return ct.includes("application/json");
+}
+
 // ------------------------------------------------------------------ D1
 
 const TABLE = "kv";
@@ -346,8 +386,12 @@ export async function sessionValid(cookieHeader) {
   }
 }
 
+// Session cookie.
+// SameSite=None + Secure: panel GitHub Pages (swanwings.github.io) üzerinden
+// açıldığında cookie cross-site gönderilebilsin. CSRF koruması origin
+// kontrolü ile sağlanır (bkz. csrfOk).
 export const sessionCookie = (value) =>
-  `swan_sess=${value}; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=43200`;
+  `swan_sess=${value}; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=43200`;
 
 // ------------------------------------------------------------------ imzali payload
 // Genel amaçlı token: base64url(payload).base64url(hmac-sha256(payload, secret))
@@ -372,7 +416,7 @@ export async function verifyPayload(token, secret = SESSION_SECRET()) {
 }
 
 export const clearCookie = () =>
-  `swan_sess=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`;
+  `swan_sess=; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=0`;
 
 // ------------------------------------------------------------------ helpers
 

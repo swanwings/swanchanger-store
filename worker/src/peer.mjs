@@ -21,6 +21,7 @@ import {
   decryptLoadout,
 } from "./_lib.mjs";
 import { ADMIN_KEY } from "./_lib.mjs";
+import { loadoutSet, loadoutsRead, loadoutsEnabled } from "./_loadouts.mjs";
 
 const PEER_EXPIRE_MS = 15 * 60 * 1000; // 15 dakika hareketsiz kalan peer silinir
 const MAX_BODY_BYTES = 16 * 1024;      // istek gövdesi üst sınırı (16 KB)
@@ -140,6 +141,8 @@ function sanitizeLoadout(raw) {
 }
 
 // Tüm peer anahtarlarını okur, süresi dolanları ve artık anahtarları temizler.
+// Loadout'lar artık private GitHub reposunda (şifreli) tutulur; D1'de sadece
+// peer METADATA'si (steamid, nick, ip, last_seen) kalır.
 // Dönen liste aktif peer'ları içerir: { key, steamid, nick, loadout, last_seen }
 async function readActivePeers(kv) {
   const now = Date.now();
@@ -167,11 +170,25 @@ async function readActivePeers(kv) {
       key,
       steamid: sid,
       nick: data.nick || "",
-      loadout: (await decryptLoadout(data.loadoutEnc)) || null,
+      loadout: null,
     });
   }
   // eski monolitik anahtardaki artık veriyi bertaraf et (bir kez, sessizce)
   try { await kvDel(kv, LEGACY_KEY); } catch { /* yoksa yok */ }
+
+  // Loadout'lar GitHub deposundan (şifreli) alinır ve çözülür
+  if (loadoutsEnabled() && active.length) {
+    try {
+      const repo = await loadoutsRead();
+      for (const p of active) {
+        const rec = repo.items[p.steamid];
+        if (!rec || !rec.enc) continue;
+        p.loadout = (await decryptLoadout(rec.enc)) || null;
+      }
+    } catch (e) {
+      console.error("[peer] loadout okunamadi:", e && e.message);
+    }
+  }
   return active;
 }
 
@@ -244,13 +261,26 @@ export default async (req) => {
     if (!selfExists && active.length >= MAX_PEERS) return err("peer table full", 429);
 
     // Yalnızca KENDİ anahtarımıza yazarız — başka hiçbir peer'in kaydı ezilmez.
-    // Loadout (skinler) veritabanında SIFRELI saklanır: AES-256-GCM, anahtar sadece
-    // sunucuda. Firestore dökümü ciphertext verir, skinleri yalnızca sahibi çözebilir.
+    // Loadout (skinler) private GitHub reposunda SIFRELI saklanır: AES-256-GCM,
+    // anahtar sadece Worker'da. GitHub dökümü ciphertext verir, skinleri yalnızca
+    // sahibi (panel) çözebilir.
     const loadoutEnc = loadout ? await encryptLoadout(loadout) : null;
     if (loadout && !loadoutEnc) {
       console.error("[peer] loadout encryption key missing - loadout not stored");
     }
-    await kvSet(kv, selfKey, { steamid, nick, ip, last_seen: now, loadoutEnc });
+    // D1'de sadece metadata
+    await kvSet(kv, selfKey, { steamid, nick, ip, last_seen: now });
+    // Loadout -> GitHub (write-behind: arka planda yazilir)
+    if (loadoutsEnabled()) {
+      try {
+        await loadoutSet(steamid, loadoutEnc, nick);
+      } catch (e) {
+        console.error("[peer] loadout yazilamadi:", e && e.message);
+      }
+    } else {
+      // GitHub yoksa geriye donuk: D1'ye yaz (eski davranis)
+      await kvSet(kv, selfKey, { steamid, nick, ip, last_seen: now, loadoutEnc });
+    }
 
     // Yanıt: aktif liste + kendi taze kaydımız
     const peers = [];

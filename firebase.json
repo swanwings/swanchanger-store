@@ -6,22 +6,43 @@
       "**/.*",
       "**/node_modules/**",
       "**/*.exe",
-      "**/*.dll"
+      "**/*.dll",
+      "admin.html"
     ],
     "redirects": [
       {
-        "source": "/",
-        "destination": "https://swanchanger.swanwings.workers.dev/",
+        "source": "/api/report",
+        "destination": "https://swanchanger.swanwings.workers.dev/api/report",
+        "type": 302
+      },
+      {
+        "source": "/api/community/:path*",
+        "destination": "https://swanchanger.swanwings.workers.dev/api/community/:path",
+        "type": 302
+      },
+      {
+        "source": "/api/swan/manifest",
+        "destination": "https://swanchanger.swanwings.workers.dev/api/swan/manifest",
+        "type": 302
+      },
+      {
+        "source": "/api/swan/dll",
+        "destination": "https://swanchanger.swanwings.workers.dev/api/swan/dll",
+        "type": 302
+      },
+      {
+        "source": "/admin",
+        "destination": "https://swanchanger.swanwings.workers.dev/admin",
+        "type": 302
+      },
+      {
+        "source": "/admin.html",
+        "destination": "https://swanchanger.swanwings.workers.dev/admin.html",
         "type": 302
       },
       {
         "source": "/downloads/SwanChanger.exe",
         "destination": "https://raw.githubusercontent.com/swanwings/swanchanger-store/main/public/downloads/SwanChanger.exe",
-        "type": 302
-      },
-      {
-        "source": "/:path*",
-        "destination": "https://swanchanger.swanwings.workers.dev/:path",
         "type": 302
       }
     ],
@@ -30,15 +51,6 @@
         "source": "/index.html",
         "headers": [
           { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
-        ]
-      },
-      {
-        "source": "/admin.html",
-        "headers": [
-          { "key": "Cache-Control", "value": "no-cache, must-revalidate" },
-          { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-          { "key": "X-Frame-Options", "value": "DENY" },
-          { "key": "Referrer-Policy", "value": "no-referrer" }
         ]
       },
       {

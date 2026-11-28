@@ -13,3 +13,6 @@ worker/.dev.vars.*
 worker/*.local
 worker/.wrangler/
 worker/.mf/
+
+# Panel kaynagi private GitHub reposunda (public depoda tutulmaz)
+panel-src/

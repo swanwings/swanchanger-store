@@ -2,8 +2,10 @@
 // Kullanım:
 //   npx wrangler d1 execute swanchanger --remote --file=./worker/schema.sql
 //   npx wrangler secret put ADMIN_KEY        -> panel giris sifresi
+//   npx wrangler secret put ADMIN_USER       -> panel giris ismi
 //   npx wrangler secret put SITE_SESSION_SECRET
 //   npx wrangler secret put LOADOUT_KEY
+//   npx wrangler secret put GITHUB_TOKEN     -> private repo (Contents R/W)
 //   npx wrangler deploy
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -12,8 +14,9 @@
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
 
-  // Statik dosyalar (magaza + panel + assets) ayni Worker'dan servis edilir.
-  // Boylece panel ile API ayni origin'de olur -> session cookie sorunu yok.
+  // Statik dosyalar (magaza + indirmeler) Worker'dan servis edilir.
+  // PANEL ise private GitHub reposundan cekilir (/admin.html) -> public depoda
+  // panel kodu YOK.
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -33,9 +36,17 @@
   "vars": {
     "PUBLIC_SITE_URL": "https://swanchanger.web.app",
     "DLL_SOURCE_URL": "https://raw.githubusercontent.com/swanwings/swanchanger-store/main/public/downloads/SwanChanger.dll",
+    "GITHUB_REPO": "swanwings/swanchanger-private",
+    "GITHUB_BRANCH": "main",
+    "PANEL_ORIGINS": "https://swanwings.github.io",
     "DISCORD_CLIENT_ID": "",
     "DISCORD_INVITE": "",
     "DISCORD_WEBHOOK": ""
+  },
+
+  // Loadout degisikliklerini GitHub'a yaz (write-behind + 5 dakikada bir yedek ag)
+  "triggers": {
+    "crons": ["*/5 * * * *"]
   },
 
   "observability": {
