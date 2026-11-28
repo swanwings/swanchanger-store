@@ -110,12 +110,19 @@ export default {
       // GitHub erisilemiyorsa: panel herkese acik depoda DEGIL (ozel repo
       // kurali) -> 503 ver. (Asset fallback'i sonsuz redirect dongusu yaratir:
       // run_worker_first yuzünden ASSETS.fetch tekrar Worker'a cagirir.)
+      const h503 = new Headers({
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-cache, must-revalidate",
+        "X-Robots-Tag": "noindex, nofollow",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "no-referrer",
+      });
       return new Response(
         JSON.stringify({
           error: "panel kaynak dosyasi alinamadi",
           hint: "GITHUB_TOKEN / GITHUB_REPO secret-varlari kontrol et",
         }),
-        { status: 503, headers: { "content-type": "application/json; charset=utf-8" } }
+        { status: 503, headers: h503 }
       );
     }
 
